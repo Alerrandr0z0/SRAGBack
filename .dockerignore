@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Build artifacts
+dist/
+htmlcov/
+mutants/
+.mutmut-cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# Docker
+docker-compose.yml
+*.Dockerfile
+
+# Test files (not needed in Docker images)
+tests/
+**/*.spec.ts
+**/*.spec.js
+**/*.test.ts
+**/*.test.js
+
+# Documentation and temporary files
+docs/
+notebooks/
+*.md
+LICENSE
+README.md
+
+# Data (raw files only — processed binaries needed at runtime)
+data/raw/
+
+# Agent / editor files
+.agents/
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,162 @@
+[project]
+name = "srag"
+version = "0.1.0"
+description = "SRAG epidemiological surveillance API — Mossoró/RN"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "pydantic>=2.7",
+    "fastapi>=0.135.1",
+    "uvicorn>=0.42.0",
+    "sqlalchemy>=2.0.48",
+    "python-multipart>=0.0.31",
+    "pyarrow>=18.0",
+    "logfire[fastapi,sqlalchemy]>=4.31.0",
+    "httpx>=0.28.1",
+    "lifelines>=0.30.3",
+    "duckdb>=1.5.1",
+    "pandera>=0.31.1",
+    "openpyxl>=3.1.5",
+    "fpdf2>=2.8.8",
+    "defusedxml>=0.7.1",
+    "rapidfuzz>=3.0",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 99
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "RUF",  # ruff-specific rules
+    "D",    # pydocstyle
+    "ANN",  # flake8-annotations
+    "C90",  # mccabe complexity
+    "T20",  # flake8-print
+    "PTH",  # flake8-use-pathlib
+]
+ignore = [
+    "D100",  # missing docstring in public module
+    "D104",  # missing docstring in public package
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+
+[tool.ruff.lint.per-file-ignores]
+"src/srag/api/main.py" = [
+    "ANN001",
+    "ANN201",
+    "ANN202",
+    "B008",
+    "B905",
+    "D103",
+    "E501",
+    "E741",
+    "F841",
+    "N806",
+    "RUF005",
+]
+"notebooks/**/*.ipynb" = [
+    "T20",    # allow print in Jupyter notebooks
+]
+"src/srag/data/pipeline.py" = [
+    "T20",    # intentional CLI progress output, shared with scripts/ingest_data.py
+]
+"scripts/ingest_data.py" = [
+    "E402",   # sys.path bootstrap must precede the srag import
+]
+"tests/**/*.py" = [
+    "ANN001",
+    "ANN201",
+    "ANN202",
+    "ANN002",
+    "ANN003",
+    "D101",
+    "D102",
+    "D103",
+    "E501",
+    "S101",   # allow assert in tests
+    "T20",    # allow print in tests
+]
+"scripts/**/*.py" = [
+    "ANN201",
+    "D103",
+    "E501",
+    "T20",    # allow print in scripts
+]
+# --- Tech Debt: Zero legacy functions with high complexity! ---
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["srag"]
+
+[tool.pyright]
+include = ["src", "scripts"]
+exclude = ["**/__pycache__", ".venv", "tests"]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnknownParameterType = false
+reportUnknownLambdaType = false
+reportPrivateUsage = false
+reportUnnecessaryIsInstance = false
+
+[tool.pre-commit]
+default_language_version = { python = "python3.14" }
+
+[tool.mutmut]
+paths_to_mutate = ["src"]
+backup = false
+runner = "PYTHONPATH=. uv run pytest -x"
+diff_line_numbers = true
+global = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+norecursedirs = ["mutants"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests requiring external data sources",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "bandit>=1.8.3",
+    "pandas-stubs>=2.2",
+    "pre-commit>=4.1",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-mock>=3.14.0",
+    "pytest-benchmark>=4.0.0",
+    "hypothesis>=6.100.0",
+    "mutmut>=3.0.0",
+    "ruff>=0.15.5",
+    "jupyterlab>=4.5.9",
+    "pip-audit>=2.10",
+    "complexipy>=0.4.0",
+    "pyright>=1.1.409",
+]

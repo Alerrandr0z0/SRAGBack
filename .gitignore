@@ -1,0 +1,67 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data files (keep structure, ignore large data)
+data/*.db
+data/*.geojson
+data/*.gpkg
+data/raw/*
+data/processed/*
+data/staging/*
+data/external/*
+!data/**/.gitkeep
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# mypy cache
+.mypy_cache/
+.ruff_cache/
+
+# pytest cache
+.pytest_cache/
+.hypothesis/
+
+# local caches (duckdb extensions, uv)
+.cache/
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Benchmarks
+.benchmarks/
+
+# Mutmut
+mutants/
+.mutmut-cache/
+
+# Complexipy
+.complexipy_cache/

@@ -1,0 +1,1217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="comunidades_rurais" id="comunidades_rurais">
+	<SimpleField name="fid" type="float"></SimpleField>
+	<SimpleField name="id" type="string"></SimpleField>
+	<SimpleField name="Polo" type="string"></SimpleField>
+</Schema>
+<Folder><name>comunidades_rurais</name>
+  <Placemark id="comunidades_rurais.1">
+	<name>Palestina</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">1</SimpleData>
+		<SimpleData name="id">98</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.304277298414,-4.97841626910778,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.2">
+	<name>PA Sussuarana Vila II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">2</SimpleData>
+		<SimpleData name="id">94</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1632161201793,-5.16769152470236,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.3">
+	<name>Sombras Grandes (Colós)</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">3</SimpleData>
+		<SimpleData name="id">128</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1612334551907,-5.14395605745859,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.4">
+	<name>Sossego</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">4</SimpleData>
+		<SimpleData name="id">129</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2465221691952,-5.44954210869646,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.5">
+	<name>Alagoinha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">5</SimpleData>
+		<SimpleData name="id">3</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4129277777778,-5.06029924310488,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.6">
+	<name>PA Maisa Agovila APAMA</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">6</SimpleData>
+		<SimpleData name="id">69</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4570572861941,-4.95218645054635,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.7">
+	<name>Arisco I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">7</SimpleData>
+		<SimpleData name="id">6</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4039444156497,-5.01558416855301,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.8">
+	<name>Barro Branco Morada Nova</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">8</SimpleData>
+		<SimpleData name="id">14</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1668471977329,-5.10473607253773,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.9">
+	<name>Barrinha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">9</SimpleData>
+		<SimpleData name="id">12</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.421539724912,-5.16743165647244,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.10">
+	<name>PA Barreira Vermelha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">10</SimpleData>
+		<SimpleData name="id">49</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5236936707963,-5.2090449635361,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.11">
+	<name>Bom Destino</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">11</SimpleData>
+		<SimpleData name="id">16</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.422382714129,-5.0697702909352,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.12">
+	<name>PA Bela Vista</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">12</SimpleData>
+		<SimpleData name="id">50</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5251666666667,-5.19582248391727,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.13">
+	<name>PA Boa Fé</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">13</SimpleData>
+		<SimpleData name="id">51</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3394868023678,-5.05198775213799,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.14">
+	<name>Boa Vista</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">14</SimpleData>
+		<SimpleData name="id">15</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2951292306204,-5.17857640010619,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.15">
+	<name>Bom Jesus</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">15</SimpleData>
+		<SimpleData name="id">17</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3482980507048,-5.23106134504122,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.16">
+	<name>PA Cabelo de Nêgo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">16</SimpleData>
+		<SimpleData name="id">52</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5607636468786,-5.24308055758156,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.17">
+	<name>Canto do Junco</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">17</SimpleData>
+		<SimpleData name="id">22</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3398268338831,-5.15204555621122,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.18">
+	<name>Carmo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">18</SimpleData>
+		<SimpleData name="id">23</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2294333333333,-5.18569822548315,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.19">
+	<name>Chafariz</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">19</SimpleData>
+		<SimpleData name="id">24</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2953463063959,-5.45059394511149,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.20">
+	<name>PA Cheiro da Terra</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">20</SimpleData>
+		<SimpleData name="id">55</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5117069569789,-5.13648447880013,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.21">
+	<name>Coqueiro</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">21</SimpleData>
+		<SimpleData name="id">26</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.453314449835,-5.03269988029324,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.22">
+	<name>PA Cordão de Sombra I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">22</SimpleData>
+		<SimpleData name="id">56</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.224606481256,-5.32690416772349,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.23">
+	<name>PA Cordão de Sombra II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">23</SimpleData>
+		<SimpleData name="id">57</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1903840610584,-5.34431688892648,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.24">
+	<name>Córrego Mossoró II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">24</SimpleData>
+		<SimpleData name="id">28</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.483599734117,-4.91621273525877,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.25">
+	<name>Acampamento Cirilo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">25</SimpleData>
+		<SimpleData name="id">2</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3275680449128,-5.04952627670395,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.26">
+	<name>PA Cristais</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">26</SimpleData>
+		<SimpleData name="id">58</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5478222268511,-5.2185621213803,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.27">
+	<name>Curral de Baixo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">27</SimpleData>
+		<SimpleData name="id">29</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2927944444444,-5.30953973552973,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.28">
+	<name>Estreito</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">28</SimpleData>
+		<SimpleData name="id">32</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2696416666667,-5.13891582053229,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.29">
+	<name>PA Fartura</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">29</SimpleData>
+		<SimpleData name="id">59</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2529494505091,-5.26807414293667,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.30">
+	<name>PA Favela</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">30</SimpleData>
+		<SimpleData name="id">60</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1700219999064,-5.24101416013196,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.31">
+	<name>Fazenda Lajes</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">31</SimpleData>
+		<SimpleData name="id">33</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2942798148975,-5.28942373250658,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.32">
+	<name>PA Fazenda Nova</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">32</SimpleData>
+		<SimpleData name="id">61</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4997017992543,-5.12619619945463,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.33">
+	<name>Cigano</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">33</SimpleData>
+		<SimpleData name="id">25</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4179305768869,-5.11171416655145,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.34">
+	<name>PA Hipólito II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">34</SimpleData>
+		<SimpleData name="id">64</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1984810479322,-5.43848304630721,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.35">
+	<name>PA Independência</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">35</SimpleData>
+		<SimpleData name="id">65</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4470388888889,-5.20843683201431,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.36">
+	<name>Jucurí</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">36</SimpleData>
+		<SimpleData name="id">35</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4996772836556,-5.21610449069374,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.37">
+	<name>PA Jurema</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">37</SimpleData>
+		<SimpleData name="id">66</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3244661243879,-5.02678115948027,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.38">
+	<name>Jurema Seca</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">38</SimpleData>
+		<SimpleData name="id">36</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2462286167935,-5.12015954014879,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.39">
+	<name>PA Lagoa do Xavier</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">39</SimpleData>
+		<SimpleData name="id">67</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4899888888889,-5.07699774338634,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.40">
+	<name>Lajedo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">40</SimpleData>
+		<SimpleData name="id">39</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4282897346708,-5.0183928311753,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.41">
+	<name>PA Lorena</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">41</SimpleData>
+		<SimpleData name="id">68</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3442737072394,-5.34660474296351,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.42">
+	<name>Macambira</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">42</SimpleData>
+		<SimpleData name="id">43</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.391785194053,-5.29339166666667,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.43">
+	<name>Maisa Vila Angelo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">43</SimpleData>
+		<SimpleData name="id">44</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.405274706946,-4.95208840857176,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.44">
+	<name>PA Maracanaú</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">44</SimpleData>
+		<SimpleData name="id">75</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1681295147276,-5.37657900650205,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.45">
+	<name>Melancias</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">45</SimpleData>
+		<SimpleData name="id">45</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.259204444568,-5.22140732593353,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.46">
+	<name>PA Maisa Agovila Montana</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">46</SimpleData>
+		<SimpleData name="id">70</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4538382924733,-5.00271432849626,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.47">
+	<name>PA Mulunguzinho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">47</SimpleData>
+		<SimpleData name="id">76</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1902392206307,-5.27560607792467,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.48">
+	<name>PA Nova Esperança (Faz. São João)</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">48</SimpleData>
+		<SimpleData name="id">77</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4114614059695,-5.18178075595146,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.49">
+	<name>PA Maisa Agovila Nova União (Poço 10)</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">49</SimpleData>
+		<SimpleData name="id">71</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4225110586892,-4.92961848963925,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.50">
+	<name>PA Novo Espinheirinho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">50</SimpleData>
+		<SimpleData name="id">79</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1770233772182,-5.46744169937682,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.51">
+	<name>PA Quixaba</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">51</SimpleData>
+		<SimpleData name="id">83</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2463562571969,-5.36362380992014,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.52">
+	<name>São João da Várzea</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">52</SimpleData>
+		<SimpleData name="id">119</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4136388888889,-5.30588592512963,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.53">
+	<name>São Raimundo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">53</SimpleData>
+		<SimpleData name="id">121</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2109624897427,-5.35560622924463,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.54">
+	<name>Olho Dágua Velho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">54</SimpleData>
+		<SimpleData name="id">48</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2903844271985,-5.41874534021247,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.55">
+	<name>Oiticica</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">55</SimpleData>
+		<SimpleData name="id">47</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.403732026266,-5.0761331780338,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.56">
+	<name>PA Olga Benário</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">56</SimpleData>
+		<SimpleData name="id">80</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.388934031276,-4.98094247077614,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.57">
+	<name>PA Oziel Alves</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">57</SimpleData>
+		<SimpleData name="id">81</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4039486758347,-4.94289443544848,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.58">
+	<name>Panela do Amaro</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">58</SimpleData>
+		<SimpleData name="id">99</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4148038402891,-5.25781618323583,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.59">
+	<name>Passagem do Rio</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">59</SimpleData>
+		<SimpleData name="id">101</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4158855037738,-5.31355833333333,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.60">
+	<name>Pau Branco</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">60</SimpleData>
+		<SimpleData name="id">102</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4097883977,-4.91012425764775,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.61">
+	<name>Pau Darco</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">61</SimpleData>
+		<SimpleData name="id">103</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2877183042394,-5.12062592973259,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.62">
+	<name>Passagem de Pedras</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">62</SimpleData>
+		<SimpleData name="id">100</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2846057151703,-5.15702451719088,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.63">
+	<name>PA Maisa Agovila Paulo Freire</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">63</SimpleData>
+		<SimpleData name="id">72</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4493055995063,-4.96144962003408,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.64">
+	<name>PA Paulo Freire </name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">64</SimpleData>
+		<SimpleData name="id">82</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2960490092394,-5.2816539429246,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.65">
+	<name>Pedra Branca</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">65</SimpleData>
+		<SimpleData name="id">104</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4486120932557,-5.2007119892303,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.66">
+	<name>Picada I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">66</SimpleData>
+		<SimpleData name="id">105</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3793277777778,-5.27613481564337,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.67">
+	<name>Piquiri I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">67</SimpleData>
+		<SimpleData name="id">107</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1879676366488,-5.08807399657958,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.68">
+	<name>PA Maisa Agovila Pomar</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">68</SimpleData>
+		<SimpleData name="id">73</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4097017765403,-4.96449214324699,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.69">
+	<name>Puxa Boi</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">69</SimpleData>
+		<SimpleData name="id">110</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.342536317306,-5.07984176599533,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.70">
+	<name>Rancho da Caça</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">70</SimpleData>
+		<SimpleData name="id">111</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.437523472536,-5.11637639522014,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.71">
+	<name>PA Maisa Agovila Real</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">71</SimpleData>
+		<SimpleData name="id">74</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4871550061259,-4.98781478156599,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.72">
+	<name>PA Recanto da Esperança</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">72</SimpleData>
+		<SimpleData name="id">84</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4219206738367,-5.04341733595511,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.73">
+	<name>Riacho Grande</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">73</SimpleData>
+		<SimpleData name="id">114</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4509833333333,-5.1466059905874,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.74">
+	<name>Riachinho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">74</SimpleData>
+		<SimpleData name="id">113</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4260675646233,-5.13992166128689,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.75">
+	<name>PA Santa Elza</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">75</SimpleData>
+		<SimpleData name="id">85</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5192115990073,-5.11424943778504,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.76">
+	<name>PA Santa Rita de Cássia</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">76</SimpleData>
+		<SimpleData name="id">86</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5274747448735,-5.19648765309237,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.77">
+	<name>PA São Cristóvão</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">77</SimpleData>
+		<SimpleData name="id">88</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5328980321335,-5.15808031096522,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.78">
+	<name>PA São José I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">78</SimpleData>
+		<SimpleData name="id">89</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.532323548793,-5.1711250453504,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.79">
+	<name>PA São José II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">79</SimpleData>
+		<SimpleData name="id">90</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5276001876185,-5.14681897793798,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.80">
+	<name>PA São Romão</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">80</SimpleData>
+		<SimpleData name="id">91</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.418965551333,-4.90979333291471,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.81">
+	<name>Senegal</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">81</SimpleData>
+		<SimpleData name="id">122</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3929330444604,-5.07473507299361,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.82">
+	<name>Serra Mossoró</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">82</SimpleData>
+		<SimpleData name="id">123</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.451743464337,-5.10427329322306,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.83">
+	<name>Sítio Jardim</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">83</SimpleData>
+		<SimpleData name="id">125</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3949750378556,-4.91293571318859,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.84">
+	<name>PA Nova Esperança Agrovila Sol Nascente</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">84</SimpleData>
+		<SimpleData name="id">78</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3912043734624,-5.15969795233589,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.85">
+	<name>PA Solidão</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">85</SimpleData>
+		<SimpleData name="id">92</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5043060467115,-5.22716901872115,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.86">
+	<name>Sussuarana</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">87</SimpleData>
+		<SimpleData name="id">130</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2236321138153,-5.16170670225311,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.87">
+	<name>PA Terra Nossa</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">88</SimpleData>
+		<SimpleData name="id">95</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4549535884878,-5.14679824763715,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.88">
+	<name>Umari</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">89</SimpleData>
+		<SimpleData name="id">133</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2513809498618,-5.13375137967509,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.89">
+	<name>Várzea da Pasta</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">90</SimpleData>
+		<SimpleData name="id">134</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3752535894354,-5.23497700807836,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.90">
+	<name>PA Vingt Rosado</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">91</SimpleData>
+		<SimpleData name="id">96</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5203921400422,-5.21562705176375,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.91">
+	<name>Espinehirinho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">92</SimpleData>
+		<SimpleData name="id">31</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1777029665447,-5.46280581218452,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.92">
+	<name>PA Hipólito I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">93</SimpleData>
+		<SimpleData name="id">63</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2127419111501,-5.42039157370041,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.93">
+	<name>Sítio do Meio</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">94</SimpleData>
+		<SimpleData name="id">124</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1653038423083,-5.35236831185057,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.94">
+	<name>PA Carmo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">95</SimpleData>
+		<SimpleData name="id">54</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2565843923773,-5.2181946845088,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.95">
+	<name>PA Sussuarana Vila I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">96</SimpleData>
+		<SimpleData name="id">93</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2183278340956,-5.16259674329502,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.96">
+	<name>Piquiri II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">97</SimpleData>
+		<SimpleData name="id">108</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1804489202123,-5.0809079107232,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.97">
+	<name>Cajazeiras</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">98</SimpleData>
+		<SimpleData name="id">19</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3375441349918,-5.13809301906314,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.98">
+	<name>Barrerinha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">99</SimpleData>
+		<SimpleData name="id">11</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5209245432885,-5.20171572983535,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.99">
+	<name>Acampamento BR405</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">100</SimpleData>
+		<SimpleData name="id">1</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5223437856845,-5.2482827918882,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.100">
+	<name>Pajeú</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">101</SimpleData>
+		<SimpleData name="id">97</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4419705672017,-5.22175218728495,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.101">
+	<name>Loteamento São Francisco BR405</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">104</SimpleData>
+		<SimpleData name="id">42</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4393359073233,-5.19316550955115,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.102">
+	<name>Santana I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">105</SimpleData>
+		<SimpleData name="id">117</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3036609628103,-5.33733162872772,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.103">
+	<name>Santana II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">106</SimpleData>
+		<SimpleData name="id">118</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2915744105419,-5.34288727629048,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.104">
+	<name>Moinho Velho</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">107</SimpleData>
+		<SimpleData name="id">46</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4030412760044,-5.02334117127435,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.105">
+	<name>Arisco II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">108</SimpleData>
+		<SimpleData name="id">7</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4070726592912,-5.04039751237444,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.106">
+	<name>Barrinha dos Neo</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">109</SimpleData>
+		<SimpleData name="id">13</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2820267849711,-5.2436397283093,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.107">
+	<name>Cabelo de Nego BR110</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">110</SimpleData>
+		<SimpleData name="id">18</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3293306420314,-5.29331602386145,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.108">
+	<name>Loteamento Bras BR110</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">111</SimpleData>
+		<SimpleData name="id">40</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3376542335664,-5.28630767606424,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.109">
+	<name>Córrego Mossoró I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">112</SimpleData>
+		<SimpleData name="id">27</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4900212218431,-4.92703852462346,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.110">
+	<name>PA Camurupim I</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">113</SimpleData>
+		<SimpleData name="id">53</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3810933523629,-5.3031294618224,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.111">
+	<name>Camurupim</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">114</SimpleData>
+		<SimpleData name="id">20</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3691871317716,-5.2886860051897,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.112">
+	<name>Loteamento Bras BR405</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">115</SimpleData>
+		<SimpleData name="id">41</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.4324013378689,-5.19869828114555,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.113">
+	<name>Sitio São José</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">117</SimpleData>
+		<SimpleData name="id">127</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5308507507783,-5.1489022489408,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.114">
+	<name>PA Santo Eneas</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">118</SimpleData>
+		<SimpleData name="id">87</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3999468586347,-5.24256149946777,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.115">
+	<name>Canto do Amaro</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">119</SimpleData>
+		<SimpleData name="id">21</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2623022706447,-5.18056633166424,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.116">
+	<name>Ema</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">120</SimpleData>
+		<SimpleData name="id">30</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2973163229081,-5.11543208727791,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.117">
+	<name>Picada II</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">121</SimpleData>
+		<SimpleData name="id">106</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3742056939454,-5.25904778567298,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.118">
+	<name>Rincão</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">122</SimpleData>
+		<SimpleData name="id">115</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2953772143526,-5.1694870954187,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.119">
+	<name>KM31</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">124</SimpleData>
+		<SimpleData name="id">37</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.418123102604,-4.9237866113673,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.120">
+	<name>Ingás</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">125</SimpleData>
+		<SimpleData name="id">34</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3574613840516,-5.23107820717645,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.121">
+	<name>PA Guarajás</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">126</SimpleData>
+		<SimpleData name="id">62</SimpleData>
+		<SimpleData name="Polo">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.5263140005739,-5.19348848052925,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.122">
+	<name>Porto Santo Antonio</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">128</SimpleData>
+		<SimpleData name="id">109</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2760796424701,-5.13493582182657,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.123">
+	<name>Taboleiro Alto</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">130</SimpleData>
+		<SimpleData name="id">131</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3023149014763,-5.09138683091113,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.124">
+	<name>Alto Moura</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">131</SimpleData>
+		<SimpleData name="id">5</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1978450054179,-5.19365572842788,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.125">
+	<name>São Joaquim</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">132</SimpleData>
+		<SimpleData name="id">120</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3086673678092,-5.36716729677858,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.126">
+	<name>Sitio Salva Vidas</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">134</SimpleData>
+		<SimpleData name="id">126</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3170882226373,-5.30216507657025,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.127">
+	<name>Alto da Pelonha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">135</SimpleData>
+		<SimpleData name="id">4</SimpleData>
+		<SimpleData name="Polo">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2916544900289,-5.2118312371472,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.128">
+	<name>Santa Julia</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">136</SimpleData>
+		<SimpleData name="id">116</SimpleData>
+		<SimpleData name="Polo">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.34481258903,-5.07323369263258,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.129">
+	<name>Taboleiro Grande</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">138</SimpleData>
+		<SimpleData name="id">132</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2758192473247,-5.25977220307481,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.130">
+	<name>Reforma do Romão</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">139</SimpleData>
+		<SimpleData name="id">112</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3576077074061,-5.35332585861144,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.131">
+	<name>Assentamento Santa Fé</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">140</SimpleData>
+		<SimpleData name="id">8</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2988028336401,-5.44641411535448,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.132">
+	<name>Laginha</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">141</SimpleData>
+		<SimpleData name="id">38</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.2273747639197,-5.48469701200479,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.133">
+	<name>Baixa Verde</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">142</SimpleData>
+		<SimpleData name="id">9</SimpleData>
+		<SimpleData name="Polo">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.1590297585402,-5.4369111423682,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="comunidades_rurais.134">
+	<name>Bargados</name>
+	<ExtendedData><SchemaData schemaUrl="#comunidades_rurais">
+		<SimpleData name="fid">143</SimpleData>
+		<SimpleData name="id">10</SimpleData>
+		<SimpleData name="Polo">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-37.3671798149999,-5.34744158799998,0</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
