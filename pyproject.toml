@@ -14,10 +14,7 @@ dependencies = [
     "python-multipart>=0.0.31",
     "pyarrow>=18.0",
     "logfire[fastapi,sqlalchemy]>=4.31.0",
-    "httpx>=0.28.1",
-    "lifelines>=0.30.3",
     "duckdb>=1.5.1",
-    "pandera>=0.31.1",
     "openpyxl>=3.1.5",
     "fpdf2>=2.8.8",
     "defusedxml>=0.7.1",
@@ -70,12 +67,10 @@ max-complexity = 15
     "N806",
     "RUF005",
 ]
-"notebooks/**/*.ipynb" = [
-    "T20",    # allow print in Jupyter notebooks
-]
 "src/srag/data/pipeline.py" = [
     "T20",    # intentional CLI progress output, shared with scripts/ingest_data.py
 ]
+# --- Tech Debt: Zero legacy functions with high complexity! ---
 "scripts/ingest_data.py" = [
     "E402",   # sys.path bootstrap must precede the srag import
 ]
@@ -143,7 +138,6 @@ markers = [
 
 [dependency-groups]
 dev = [
-    "ipykernel>=7.2.0",
     "bandit>=1.8.3",
     "pandas-stubs>=2.2",
     "pre-commit>=4.1",
@@ -155,8 +149,8 @@ dev = [
     "hypothesis>=6.100.0",
     "mutmut>=3.0.0",
     "ruff>=0.15.5",
-    "jupyterlab>=4.5.9",
     "pip-audit>=2.10",
     "complexipy>=0.4.0",
     "pyright>=1.1.409",
+    "httpx>=0.28.1",
 ]

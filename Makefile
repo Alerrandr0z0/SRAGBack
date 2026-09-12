@@ -1,6 +1,6 @@
-# SRAG Mossoró/RN - Backend Toolchain (somente Python)
+# SRAG Mossoró/RN - Backend & System Toolchain
 
-.PHONY: help setup ingest start start-docker dev stop stop-docker status \
+.PHONY: help setup ingest start start-docker dev stop stop-backend stop-frontend status \
         test property-test bench lint complexity fix hooks \
         security security-back security-secrets security-deps \
         mutation mutation-back mutation-incr mutation-score \
@@ -8,15 +8,17 @@
 
 # --- Default ---
 help:
-	@echo "SRAG Mossoró/RN Toolchain (backend)"
+	@echo "SRAG Mossoró/RN Toolchain"
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "  setup             Install dependencies and git hooks"
 	@echo "  ingest            Run universal ingestion"
-	@echo "  start             Start backend service (port 8001)"
-	@echo "  dev               Start backend in dev mode"
-	@echo "  stop              Stop all services"
-	@echo "  status            Show services status"
+	@echo "  dev               Start dev environment (backend 8001 + frontend dev 5174)"
+	@echo "  start             Start production environment (backend 8001 + frontend prod 80)"
+	@echo "  stop              Stop all services (backend + frontend)"
+	@echo "  stop-backend      Stop backend service only"
+	@echo "  stop-frontend     Stop frontend dev service only"
+	@echo "  status            Show status of running services"
 	@echo "  test              Run backend tests"
 	@echo "  property-test     Run property-based tests"
 	@echo "  bench             Run benchmarks"
@@ -57,27 +59,50 @@ ingest:
 	mkdir -p .cache/duckdb
 	$(DOCKER_RUN_BACK) env UV_CACHE_DIR=/tmp/.uv-cache uv run scripts/ingest_data.py
 
+dev: env
+	$(eval GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo $$(date +%s)))
+	docker-compose --profile dev up --build -d backend frontend-dev
+	@echo ""
+	@echo "Servicos em execucao (MODO DEV):"
+	@echo "- Backend:  http://localhost:8001"
+	@echo "- Frontend: http://localhost:5174"
+	@echo ""
+	@echo "Para parar os servicos, execute: make stop"
+
 start: env
 	$(eval GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo $$(date +%s)))
-	docker-compose build --build-arg CACHEBUST=$(GIT_HASH) backend
-	docker-compose up -d backend
-	@printf "\nServico em execucao:\n"
-	@printf -- "- Backend: http://localhost:8001\n"
+	docker-compose --profile production up --build -d backend frontend
+	@echo ""
+	@echo "Servicos em execucao (MODO PRODUCAO):"
+	@echo "- Backend:  http://localhost:8001"
+	@echo "- Frontend: http://localhost:80"
 
 start-docker: start
 
-dev: env
-	docker-compose up --build -d backend
-	@printf "\nServico em execucao (MODO DEV):\n"
-	@printf -- "- Backend: http://localhost:8001\n"
+stop:
+	@echo "Parando todos os servicos..."
+	@docker-compose --profile dev --profile production down -t 5 2>/dev/null || docker-compose down -t 5
+	@pkill -f "npm run dev" 2>/dev/null || true
+	@pkill -f "vite" 2>/dev/null || true
+	@echo "Todos os servicos foram parados com sucesso."
 
 stop-docker: stop
 
-stop:
-	docker-compose down -t 5
+stop-backend:
+	@docker-compose stop backend 2>/dev/null || true
+	@echo "Backend parado."
+
+stop-frontend:
+	@docker-compose stop frontend-dev frontend 2>/dev/null || true
+	@pkill -f "npm run dev" 2>/dev/null || true
+	@pkill -f "vite" 2>/dev/null || true
+	@echo "Frontend parado."
 
 status:
 	docker-compose ps
+	@echo ""
+	@echo "Processos dev no host (se houver):"
+	@ps aux | grep -E "[n]pm run dev|[v]ite" || echo "Nenhum processo dev solto no host."
 
 # --- Quality & Security ---
 lint:

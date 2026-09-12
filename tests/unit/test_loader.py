@@ -30,7 +30,7 @@ def test_normalize_bairro_name() -> None:
     assert _normalize_bairro_name("ABOLICAO 4") == "ABOLICAO"
     assert _normalize_bairro_name("MALVINAS") == "DOM JAIME CAMARA"
     assert _normalize_bairro_name("VINGT ROSADO") == "RINCAO"
-    assert _normalize_bairro_name("MONSENHOR AMERICO") == "MONS ALFREDO SIMONETI"
+    assert _normalize_bairro_name("MONSENHOR AMERICO") == "MONSENHOR ALFREDO SIMONETI"
     assert _normalize_bairro_name("TEIMOSOS") == "PRESIDENTE COSTA E SILVA"
     assert _normalize_bairro_name("BOA ESPERANCA") == "SANTA DELMIRA"
 
@@ -38,12 +38,12 @@ def test_normalize_bairro_name() -> None:
     assert _normalize_bairro_name("CONJ. VINGT ROSADO") == "RINCAO"
     assert _normalize_bairro_name("CONJUNTO GERALDO MELO") == "PRESIDENTE COSTA E SILVA"
     assert _normalize_bairro_name("COMUNIDADE DO CIGANO") == "ABOLICAO"
-    assert _normalize_bairro_name("MONS. AMERICO") == "MONS ALFREDO SIMONETI"
+    assert _normalize_bairro_name("MONS. AMERICO") == "MONSENHOR ALFREDO SIMONETI"
 
     # Test dynamic typo/fuzzy matching
     assert _normalize_bairro_name("URIC GRAF") == "ALTO DE SAO MANOEL"
     assert _normalize_bairro_name("URICK GRAF") == "ALTO DE SAO MANOEL"
-    assert _normalize_bairro_name("ALFREDO SIMONNETI") == "MONS ALFREDO SIMONETI"
+    assert _normalize_bairro_name("ALFREDO SIMONNETI") == "MONSENHOR ALFREDO SIMONETI"
     assert _normalize_bairro_name("INDEPENCIA") == "REDENCAO"
     assert _normalize_bairro_name("LIBERDADE 1") == "PLANALTO TREZE DE MAIO"
     assert _normalize_bairro_name("LIBERDADE I E II") == "PLANALTO TREZE DE MAIO"

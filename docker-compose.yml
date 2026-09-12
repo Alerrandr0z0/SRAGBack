@@ -72,7 +72,7 @@ services:
     volumes:
       - ../SRAGFront:/app
     working_dir: /app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5174 --strictPort"
     depends_on:
       backend:
         condition: service_healthy
