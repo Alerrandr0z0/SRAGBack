@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Column, Date, DateTime, Float, Integer, String, Text, create_engine, text
+from sqlalchemy import Column, Date, Float, Integer, String, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 if TYPE_CHECKING:
@@ -200,25 +200,6 @@ class SragRecord(Base):
     TIPO_TRAT = Column(Integer)
     OUT_TRAT = Column(String(100))
     SURTO_SG = Column(Integer)
-
-
-class QuarantinedRecord(Base):
-    """SRAG rows rejected by strict validation during ingestion.
-
-    Mirrors the reference ``NotificationWithError``: faulty rows stay out of
-    the base until an admin fixes (promote) or discards them.
-    """
-
-    __tablename__ = "srag_quarantine"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    batch = Column(String(64), index=True)
-    source_file = Column(String(255))
-    row_index = Column(Integer)
-    raw_record = Column(Text)  # JSON with the row values as ingested
-    error_category = Column(String(80))
-    error_detail = Column(String(500))
-    created_at = Column(DateTime)
 
 
 def generate_case_hash(record: dict[str, Any]) -> str:

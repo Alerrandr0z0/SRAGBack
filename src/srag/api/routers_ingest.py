@@ -29,13 +29,13 @@ ALLOWED_EXTENSIONS = {".xlsx", ".csv", ".json", ".xml", ".parquet"}
 _JOB: dict[str, Any] = {"state": "idle"}
 
 
-def _run_ingest_job(db_file: Path, batch: str) -> None:
-    """Background ingestion: full pipeline + quarantine over all raw sources."""
+def _run_ingest_job(db_file: Path) -> None:
+    """Background ingestion: full pipeline over all raw sources."""
     backup = db_file.with_suffix(".upload_bak")
     try:
         if db_file.exists():
             backup.write_bytes(db_file.read_bytes())
-        stats = run_ingest(batch=batch)
+        stats = run_ingest()
         _make_db_shared(db_file)
         refresh_df()
         _JOB.update(
@@ -137,7 +137,7 @@ def ingest_upload(
             "error": None,
         }
     )
-    background_tasks.add_task(_run_ingest_job, db_file, dest.name)
+    background_tasks.add_task(_run_ingest_job, db_file)
 
     return sanitize_data(
         {"message": "Processamento iniciado.", "file": dest.name, "status": "processing"}

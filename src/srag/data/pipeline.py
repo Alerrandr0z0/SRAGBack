@@ -243,19 +243,15 @@ def _run_ingest_geo_pass(db_path: Path) -> None:
 def run_ingest(
     db_path_override: Path | None = None,
     data_dirs_override: list[Path] | None = None,
-    batch: str | None = None,
 ) -> dict[str, Any]:
     """Run the master ingestion pipeline.
 
     Args:
         db_path_override: Optional path to the SQLite database.
         data_dirs_override: Optional list of directories to search for data.
-        batch: Tag identifying this upload batch for the error quarantine
-            (defaults to a timestamp).
 
     Returns:
-        Stats dict with temp_cases, unique_cases, duplicates_removed, sources,
-        quarantined.
+        Stats dict with temp_cases, unique_cases, duplicates_removed, sources.
     """
     from srag.data.database import init_db
 
@@ -314,7 +310,6 @@ def run_ingest(
             "unique_cases": 0,
             "duplicates_removed": 0,
             "sources": 0,
-            "quarantined": 0,
         }
         return empty_stats
 
@@ -351,16 +346,12 @@ def run_ingest(
     # 3. Normalização Inteligente (Pandas Pass)
     _run_ingest_geo_pass(db_path)
 
-    # Quarentena desativada: a base mantém todas as notificações.
-    quarantine_stats = {"quarantined": 0, "by_category": {}}
-
     print(f"✅ Ingestão finalizada: {final_count} registros únicos.")
     return {
         "temp_cases": temp_count,
         "unique_cases": final_count,
         "duplicates_removed": duplicates,
         "sources": len(files),
-        "quarantined": quarantine_stats["quarantined"],
     }
 
 

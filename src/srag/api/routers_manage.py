@@ -1,8 +1,7 @@
-"""Manage routers (ADMIN only): review quarantined errors (read-only)."""
+"""Manage routers (ADMIN only): data-quality review (read-only)."""
 
 from __future__ import annotations
 
-import json
 import sqlite3
 from pathlib import Path
 from typing import Annotated, Any
@@ -48,53 +47,6 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
-def _latest_batch(conn: sqlite3.Connection) -> str | None:
-    row = conn.execute(
-        "SELECT batch FROM srag_quarantine ORDER BY id DESC LIMIT 1"
-    ).fetchone()
-    return row["batch"] if row else None
-
-
-def _error_clauses(
-    category: str | None,
-    batch: str | None,
-    start_date: str | None,
-    end_date: str | None,
-    agent: str | None = None,
-) -> tuple[str, list[Any]]:
-    """Shared WHERE builder for the errors list and its PDF export."""
-    clauses: list[str] = []
-    params: list[Any] = []
-    if batch:
-        clauses.append("batch = ?")
-        params.append(batch)
-    if category:
-        clauses.append("error_category = ?")
-        params.append(category)
-    if start_date:
-        clauses.append("json_extract(raw_record, '$.DT_NOTIFIC') >= ?")
-        params.append(start_date)
-    if end_date:
-        clauses.append("json_extract(raw_record, '$.DT_NOTIFIC') <= ?")
-        params.append(end_date)
-    if agent:
-        codes = [code for code, name in AGENT_BY_CLASSI.items() if name == agent]
-        if codes:
-            placeholders = ",".join("?" for _ in codes)
-            agent_clause = (
-                f"CAST(json_extract(raw_record, '$.CLASSI_FIN') AS INTEGER) "
-                f"IN ({placeholders})"
-            )
-            if agent == "NAO_ESPECIFICADO":
-                agent_clause = (
-                    f"({agent_clause} OR json_extract(raw_record, '$.CLASSI_FIN') IS NULL)"
-                )
-            clauses.append(agent_clause)
-            params.extend(codes)
-    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-    return where, params
-
-
 def _epi_week_of(raw: dict[str, Any]) -> int | None:
     """Epidemiological week from the raw record (DT_SIN_PRI, fallback DT_NOTIFIC)."""
     from datetime import date as _date
@@ -118,7 +70,116 @@ def _epi_week_of(raw: dict[str, Any]) -> int | None:
     return None
 
 
-# ---------------------------------------------------------------- errors ---
+DQ_PROBLEMS: tuple[str, ...] = (
+    "Data faltando",
+    "Bairro faltando",
+    "Sexo não informado",
+    "Classificação faltando",
+    "Evolução não informada",
+)
+
+DQ_CONDITIONS: dict[str, str] = {
+    "Data faltando": "(DT_NOTIFIC IS NULL OR DT_NOTIFIC = '')",
+    "Bairro faltando": "(NM_BAIRRO IS NULL OR NM_BAIRRO = '')",
+    "Sexo não informado": "(CS_SEXO IS NULL OR CS_SEXO = '' OR CS_SEXO IN ('I', '9'))",
+    "Classificação faltando": "(CLASSI_FIN IS NULL OR CLASSI_FIN = '')",
+    "Evolução não informada": "(EVOLUCAO IS NULL OR EVOLUCAO = '')",
+}
+
+DQ_DETAIL: dict[str, str] = {
+    "Data faltando": "DT_NOTIFIC ausente",
+    "Bairro faltando": "NM_BAIRRO ausente",
+    "Sexo não informado": "CS_SEXO não informado ou ignorado",
+    "Classificação faltando": "CLASSI_FIN ausente",
+    "Evolução não informada": "EVOLUCAO não informada",
+}
+
+
+def _dq_problems_of(raw: dict[str, Any]) -> list[str]:
+    found: list[str] = []
+    if raw.get("DT_NOTIFIC") in (None, ""):
+        found.append("Data faltando")
+    if raw.get("NM_BAIRRO") in (None, ""):
+        found.append("Bairro faltando")
+    if raw.get("CS_SEXO") in (None, "", "I", "9"):
+        found.append("Sexo não informado")
+    if raw.get("CLASSI_FIN") in (None, ""):
+        found.append("Classificação faltando")
+    if raw.get("EVOLUCAO") in (None, ""):
+        found.append("Evolução não informada")
+    return found
+
+
+def _dq_clauses(
+    category: str | None,
+    start_date: str | None,
+    end_date: str | None,
+    agent: str | None = None,
+) -> tuple[str, list[Any]]:
+    has_any = " OR ".join(DQ_CONDITIONS[label] for label in DQ_PROBLEMS)
+    clauses: list[str] = [f"({has_any})"]
+    params: list[Any] = []
+    if category and category in DQ_CONDITIONS:
+        clauses.append(DQ_CONDITIONS[category])
+    if start_date:
+        clauses.append("DT_NOTIFIC >= ?")
+        params.append(start_date)
+    if end_date:
+        clauses.append("DT_NOTIFIC <= ?")
+        params.append(end_date)
+    if agent:
+        codes = [code for code, name in AGENT_BY_CLASSI.items() if name == agent]
+        if codes:
+            placeholders = ",".join("?" for _ in codes)
+            agent_clause = f"CAST(CLASSI_FIN AS INTEGER) IN ({placeholders})"
+            if agent == "NAO_ESPECIFICADO":
+                agent_clause = f"({agent_clause} OR CLASSI_FIN IS NULL)"
+            clauses.append(agent_clause)
+            params.extend(codes)
+    return f"WHERE {' AND '.join(clauses)}", params
+
+
+def _dq_categories(
+    conn: sqlite3.Connection, start_date: str | None, end_date: str | None
+) -> list[dict[str, Any]]:
+    sums = ", ".join(
+        f"SUM(CASE WHEN {DQ_CONDITIONS[label]} THEN 1 ELSE 0 END)"
+        for label in DQ_PROBLEMS
+    )
+    clauses: list[str] = []
+    params: list[Any] = []
+    if start_date:
+        clauses.append("DT_NOTIFIC >= ?")
+        params.append(start_date)
+    if end_date:
+        clauses.append("DT_NOTIFIC <= ?")
+        params.append(end_date)
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    row = conn.execute(
+        f"SELECT {sums} FROM casos_srag {where}",  # nosec B608
+        params,
+    ).fetchone()
+    values = list(row) if row else [0] * len(DQ_PROBLEMS)
+    return [
+        {"category": label, "count": int(values[i] or 0)}
+        for i, label in enumerate(DQ_PROBLEMS)
+        if int(values[i] or 0) > 0
+    ]
+
+
+def _dq_row_to_item(row: sqlite3.Row, category: str | None) -> dict[str, Any]:
+    raw = dict(row)
+    raw.pop("rowid", None)
+    problems = _dq_problems_of(raw)
+    label = category if category in problems else (problems[0] if problems else "Outros")
+    return {
+        "id": row["rowid"],
+        "raw_record": raw,
+        "error_category": label,
+        "error_detail": DQ_DETAIL.get(label, label),
+        "semana_epidemiologica": _epi_week_of(raw),
+        "agente": _agent_of(raw),
+    }
 
 
 @router.get("/manage/errors")
@@ -131,56 +192,29 @@ def manage_errors(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ) -> dict[str, Any]:
-    """Paginated quarantined-error list with category counts (ADMIN only)."""
+    """Paginated data-quality list from casos_srag (ADMIN only, read-only)."""
     del admin
     with _connect() as conn:
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS srag_quarantine (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                batch VARCHAR(64),
-                source_file VARCHAR(255),
-                row_index INTEGER,
-                raw_record TEXT,
-                error_category VARCHAR(80),
-                error_detail VARCHAR(500),
-                created_at DATETIME
-            )"""
-        )
-        active_batch = _latest_batch(conn)
-        where, params = _error_clauses(category, active_batch, start_date, end_date, agent)
+        where, params = _dq_clauses(category, start_date, end_date, agent)
         total = conn.execute(
-            f"SELECT count(*) AS n FROM srag_quarantine {where}", params  # nosec B608
+            f"SELECT count(*) AS n FROM casos_srag {where}",  # nosec B608
+            params,
         ).fetchone()["n"]
-        rows = conn.execute(
-            "SELECT id, batch, source_file, row_index, raw_record, "  # nosec B608
-            f"error_category, error_detail, created_at FROM srag_quarantine {where} "
-            "ORDER BY id LIMIT ? OFFSET ?",
+        cursor = conn.execute(
+            "SELECT rowid, * "  # nosec B608
+            f"FROM casos_srag {where} "
+            "ORDER BY rowid LIMIT ? OFFSET ?",
             [*params, page_size, (page - 1) * page_size],
-        ).fetchall()
-        cat_where, cat_params = _error_clauses(None, active_batch, start_date, end_date)
-        categories = conn.execute(
-            "SELECT error_category AS category, count(*) AS count "  # nosec B608
-            f"FROM srag_quarantine {cat_where} GROUP BY error_category ORDER BY count DESC",
-            cat_params,
-        ).fetchall()
-    items = []
-    for r in rows:
-        item = dict(r)
-        try:
-            raw = json.loads(item["raw_record"] or "{}")
-        except (TypeError, json.JSONDecodeError):
-            raw = {}
-        item["raw_record"] = raw if isinstance(raw, dict) else {}
-        item["semana_epidemiologica"] = _epi_week_of(item["raw_record"])
-        item["agente"] = _agent_of(item["raw_record"])
-        items.append(item)
+        )
+        items = [_dq_row_to_item(r, category) for r in cursor.fetchall()]
+        categories = _dq_categories(conn, start_date, end_date)
     return sanitize_data(
         {
             "items": items,
             "total": total,
             "page": page,
             "page_size": page_size,
-            "categories": [dict(c) for c in categories],
+            "categories": categories,
         }
     )
 
@@ -193,25 +227,21 @@ def errors_pdf(
     end_date: str | None = Query(None, max_length=10),
     agent: str | None = Query(None, max_length=20),
 ) -> Response:
-    """Quarantined-error report PDF honoring the active filters (ADMIN only).
-
-    Port of the reference ``ErrorsPdfReportService``: same layout, subtitle
-    format and 8-column table (Agente in place of Doença).
-    """
+    """Data-quality report PDF honoring the active filters (ADMIN only)."""
     del admin
     from datetime import datetime
 
     from srag.reporting import build_errors_pdf, format_br_date, today_br
 
     with _connect() as conn:
-        active_batch = _latest_batch(conn)
-        where, params = _error_clauses(category, active_batch, start_date, end_date, agent)
-        rows = conn.execute(
-            "SELECT id, batch, source_file, row_index, raw_record, "  # nosec B608
-            f"error_category, error_detail, created_at FROM srag_quarantine {where} "
-            "ORDER BY id LIMIT 2000",
+        where, params = _dq_clauses(category, start_date, end_date, agent)
+        cursor = conn.execute(
+            "SELECT rowid, * "  # nosec B608
+            f"FROM casos_srag {where} "
+            "ORDER BY rowid LIMIT 2000",
             params,
-        ).fetchall()
+        )
+        items = [_dq_row_to_item(r, category) for r in cursor.fetchall()]
 
     agent_labels = {
         "INFLUENZA": "Influenza",
@@ -221,17 +251,11 @@ def errors_pdf(
         "NAO_ESPECIFICADO": "Não especificado",
     }
     records: list[dict[str, Any]] = []
-    for r in rows:
-        item = dict(r)
-        try:
-            raw = json.loads(item["raw_record"] or "{}")
-        except (TypeError, json.JSONDecodeError):
-            raw = {}
-        if not isinstance(raw, dict):
-            raw = {}
+    for item in items:
+        raw = item["raw_record"]
         records.append(
             {
-                "agente": agent_labels.get(_agent_of(raw), "Não especificado"),
+                "agente": agent_labels.get(str(item["agente"]), "Não especificado"),
                 "data_notif": format_br_date(raw.get("DT_NOTIFIC")),
                 "bairro": raw.get("NM_BAIRRO") or raw.get("BAIRRO_REF") or "—",
                 "sexo": raw.get("CS_SEXO") or "—",
@@ -241,8 +265,8 @@ def errors_pdf(
                 "evolucao": raw.get("EVOLUCAO")
                 if raw.get("EVOLUCAO") not in (None, "")
                 else "—",
-                "semana": _epi_week_of(raw) or "—",
-                "problema": item.get("error_category") or "Outros",
+                "semana": item["semana_epidemiologica"] or "—",
+                "problema": item["error_category"],
             }
         )
 
