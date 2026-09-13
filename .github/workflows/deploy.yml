@@ -1,0 +1,50 @@
+name: SRAG Back CI and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f backend.Dockerfile -t srag-back-test .
+      - run: >-
+          docker run --rm
+          -v "$GITHUB_WORKSPACE/tests:/app/tests:ro"
+          -e PYTHONPATH=/app/src
+          -e HOME=/tmp
+          srag-back-test
+          uv run pytest tests/ -m "not slow" --basetemp=/tmp/pytest
+          -p no:cacheprovider
+
+  deploy:
+    name: Deploy to VPS
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
+          script: |
+            flock -w 300 /tmp/srag-deploy.lock sh -ceu '
+              git -C /root/apps/SRAGBack pull --ff-only
+              git -C /root/apps/SRAGFront pull --ff-only
+              cd /root/apps/SRAGBack
+              docker compose -f docker-compose.production.yml up -d --build
+              for attempt in $(seq 1 30); do
+                curl -fsS http://127.0.0.1:8091/api/health && exit 0
+                sleep 2
+              done
+              exit 1
+            '
