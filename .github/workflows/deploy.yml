@@ -21,8 +21,9 @@ jobs:
           -e PYTHONPATH=/app/src
           -e HOME=/tmp
           srag-back-test
-          uv run pytest tests/ -m "not slow" --basetemp=/tmp/pytest
-          -p no:cacheprovider
+          sh -lc 'python -c "from srag.data.database import init_db; init_db()"
+          && uv run pytest tests/ -m "not slow" --basetemp=/tmp/pytest
+          -p no:cacheprovider'
 
   deploy:
     name: Deploy to VPS
