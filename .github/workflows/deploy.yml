@@ -21,7 +21,7 @@ jobs:
           -e PYTHONPATH=/app/src
           -e HOME=/tmp
           srag-back-test
-          sh -lc 'uv run python -c "from srag.data.database import init_db; init_db()"
+          sh -lc 'uv run python -c "from srag.data.database import init_db; import sqlite3; init_db(); con = sqlite3.connect(\"data/processed/srag_mossoro.db\"); con.execute(\"INSERT INTO casos_srag (unique_hash, DT_NOTIFIC, ID_MUNICIP, ID_MN_RESI, DT_SIN_PRI) VALUES (?, ?, ?, ?, ?)\", (\"00000000000000000000000000000000\", \"2020-01-01\", \"2408003\", \"2408003\", \"2020-01-01\")); con.commit()"
           && uv run pytest tests/ -m "not slow" --basetemp=/tmp/pytest
           -p no:cacheprovider'
 
