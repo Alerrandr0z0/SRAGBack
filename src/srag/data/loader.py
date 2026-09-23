@@ -41,47 +41,46 @@ COLUMN_ALIASES = {
 }
 
 OFFICIAL_BAIRROS = {
-    "ABOLICAO",
+    "ABOLICOES",
     "AEROPORTO",
-    "ALTO DA BELA VISTA",
-    "ALTO DA CONCEICAO",
     "ALTO DE SAO MANOEL",
     "ALTO DO SUMARE",
+    "ALTO DA CONCEICAO",
+    "ALTO DA BELA VISTA",
+    "ALAGADOS",
     "BARROCAS",
-    "BELA VISTA",
+    "BOM JARDIM",
     "BELO HORIZONTE",
     "BOA VISTA",
-    "BOM JARDIM",
     "BOM JESUS",
     "CENTRO",
-    "DIX-SEPT ROSADO",
+    "COSTA E SILVA",
     "DOM JAIME CAMARA",
     "DOZE ANOS",
-    "ILHA DE SANTA LUZIA",
+    "GOV DIX SEPT ROSADO",
     "ITAPETINGA",
+    "ILHA DE SANTA LUZIA",
     "LAGOA DO MATO",
     "MONSENHOR ALFREDO SIMONETI",
     "NOVA BETANIA",
-    "PAREDOES",
     "PINTOS",
-    "PLANALTO TREZE DE MAIO",
-    "PRESIDENTE COSTA E SILVA",
+    "PAREDOES",
+    "PLANALTO 13 DE MAIO",
     "REDENCAO",
     "RINCAO",
+    "SANTO ANTONIO",
     "SANTA DELMIRA",
     "SANTA JULIA",
-    "SANTO ANTONIO",
-    "AREA RURAL DE MOSSORO",
-    "ZONA RURAL",
 }
 
 SUB_BAIRRO_TO_BAIRRO_MAP = {
-    # 01. ABOLICOES (Maps to official Abolição in GeoJSON)
-    "ABOLICOES": "ABOLICAO",
-    "CIGANO": "ABOLICAO",
-    "TRES VINTENS": "ABOLICAO",
-    "SEM TERRA": "ABOLICAO",
-    "POUSADA DOS TERMAS": "ABOLICAO",
+    # 01. ABOLICOES (SINAN canonical; ABOLICAO is the singular base form)
+    "ABOLICOES": "ABOLICOES",
+    "ABOLICAO": "ABOLICOES",
+    "CIGANO": "ABOLICOES",
+    "TRES VINTENS": "ABOLICOES",
+    "SEM TERRA": "ABOLICOES",
+    "POUSADA DOS TERMAS": "ABOLICOES",
     # 02. AEROPORTO
     "MACARRAO": "AEROPORTO",
     "IPASA": "AEROPORTO",
@@ -101,28 +100,28 @@ SUB_BAIRRO_TO_BAIRRO_MAP = {
     "QUINTAS ALPHAVILLE": "ALTO DA BELA VISTA",
     "ALPHAVILLE": "ALTO DA BELA VISTA",
     "SANVILLE": "ALTO DA BELA VISTA",
-    # 08. BARROCAS
+    # 08. BARROCAS (ALAGADOS is its own official bairro since SINAN 01-30)
     "FREITAS NOBRE": "BARROCAS",
-    "ALAGADOS": "BARROCAS",
     # 10. BELO HORIZONTE
     "CARNAUBAL": "BELO HORIZONTE",
-    # 14. COSTA E SILVA (Maps to official Presidente Costa e Silva in GeoJSON)
-    "COSTA E SILVA": "PRESIDENTE COSTA E SILVA",
-    "TEIMOSOS": "PRESIDENTE COSTA E SILVA",
-    "GERALDO MELO": "PRESIDENTE COSTA E SILVA",
+    # 14. COSTA E SILVA (SINAN canonical; PRESIDENTE... is the legacy GeoJSON label)
+    "PRESIDENTE COSTA E SILVA": "COSTA E SILVA",
+    "TEIMOSOS": "COSTA E SILVA",
+    "GERALDO MELO": "COSTA E SILVA",
     # 15. DOM JAIME CAMARA
     "MALVINAS": "DOM JAIME CAMARA",
     "NOVA VIDA": "DOM JAIME CAMARA",
     "TRAQUILIM": "DOM JAIME CAMARA",
     "JARDIM DAS PALMEIRAS": "DOM JAIME CAMARA",
-    # 17. GOV DIX SEPT ROSADO (Maps to official Dix-Sept Rosado in GeoJSON)
-    "GOV DIX SEPT ROSADO": "DIX-SEPT ROSADO",
-    "GOVERNADOR DIX SEPT ROSADO": "DIX-SEPT ROSADO",
-    "FORNO VELHO": "DIX-SEPT ROSADO",
-    "BOM PASTOR": "DIX-SEPT ROSADO",
-    "VERONIQUE": "DIX-SEPT ROSADO",
-    "BOULEVARD": "DIX-SEPT ROSADO",
-    # 18. ITAPETINGA
+    # 17. GOV DIX SEPT ROSADO (SINAN canonical; DIX-SEPT ROSADO is the legacy GeoJSON label)
+    "DIX-SEPT ROSADO": "GOV DIX SEPT ROSADO",
+    "GOVERNADOR DIX SEPT ROSADO": "GOV DIX SEPT ROSADO",
+    "FORNO VELHO": "GOV DIX SEPT ROSADO",
+    "BOM PASTOR": "GOV DIX SEPT ROSADO",
+    "VERONIQUE": "GOV DIX SEPT ROSADO",
+    "BOULEVARD": "GOV DIX SEPT ROSADO",
+    # 18. ITAPETINGA (CIDADE OESTE canonical; CIDADA OESTE is the SINAN-form typo)
+    "CIDADE OESTE": "ITAPETINGA",
     "CIDADA OESTE": "ITAPETINGA",
     # 20. LAGOA DO MATO
     "ALTO DO XEREM": "LAGOA DO MATO",
@@ -135,18 +134,20 @@ SUB_BAIRRO_TO_BAIRRO_MAP = {
     "PORTAL DO SOL": "NOVA BETANIA",
     # 24. PAREDOES
     "SAO JOSE": "PAREDOES",
-    # 25. PLANALTO 13 DE MAIO (Maps to official Planalto Treze de Maio in GeoJSON)
-    "PLANALTO 13 DE MAIO": "PLANALTO TREZE DE MAIO",
-    "ALAMEDA DOS CAJUEIROS": "PLANALTO TREZE DE MAIO",
-    "LIBERDADE": "PLANALTO TREZE DE MAIO",
-    "PAPOCO": "PLANALTO TREZE DE MAIO",
-    "INOCOOP": "PLANALTO TREZE DE MAIO",
+    # 25. PLANALTO 13 DE MAIO (SINAN canonical; TREZE DE MAIO is the legacy GeoJSON label)
+    "PLANALTO TREZE DE MAIO": "PLANALTO 13 DE MAIO",
+    "ALAMEDA DOS CAJUEIROS": "PLANALTO 13 DE MAIO",
+    "LIBERDADE": "PLANALTO 13 DE MAIO",
+    "PAPOCO": "PLANALTO 13 DE MAIO",
+    "INOCOOP": "PLANALTO 13 DE MAIO",
     # 26. REDENCAO
     "INTEGRACAO": "REDENCAO",
     "INDEPENDENCIA": "REDENCAO",
     "JARDINS": "REDENCAO",
-    # 27. RINCAO
+    # 27. RINCAO (TRINTA DE SETEMBRO is a cadastral polygon aggregated here
+    # per vigilância definition; shares 4 vertices with VINGT ROSADO)
     "VINGT ROSADO": "RINCAO",
+    "TRINTA DE SETEMBRO": "RINCAO",
     "ALTO DA PELONHA": "RINCAO",
     "ODETE ROSADO": "RINCAO",
     "ALTO DAS BRISAS": "RINCAO",
@@ -171,6 +172,11 @@ SUB_BAIRRO_TO_BAIRRO_MAP = {
 
 VARIANT_SUFFIX_RE = re.compile(r"\s+(?:\d+|[IVXLCDM]+)$")
 COMPOUND_VARIANT_SUFFIX_RE = re.compile(r"\s+[IVXLCDM]+(?:\s+E\s+[IVXLCDM]+)+$")
+
+# Special territorial labels: not SINAN bairros, but first-class API categories.
+# Declared here (single source) so loader, territorial and filters agree.
+RURAL_AGGREGATE_LABEL = "AREA RURAL DE MOSSORO"
+MISSING_BAIRRO_LABEL = "NAO INFORMADO"
 
 RURAL_KEYWORDS = [
     "RURAL",
@@ -236,6 +242,12 @@ def _normalize_bairro_name(value: str | None) -> str | None:
     if text in OFFICIAL_BAIRROS or text in SUB_BAIRRO_TO_BAIRRO_MAP.values():
         return text
 
+    # Rural localities must never fuzzy-match an urban sub-bairro:
+    # only exact "SAO JOSE" maps to PAREDOES, "SITIO SAO JOSE" stays raw
+    # (collapses to AREA RURAL DE MOSSORO downstream).
+    if any(keyword in text for keyword in RURAL_KEYWORDS):
+        return text
+
     # Fuzzy fallback on a relaxed variant-stripped form so typos like
     # "LEBERDADE 1" can still resolve to the intended sub-bairro key.
     relaxed_text = _relaxed_variant_text(text)
@@ -263,7 +275,9 @@ def _strip_variant_suffix(text: str) -> str:
     """Collapse numbered or Roman-numeral variants when the base name is official."""
     candidate = VARIANT_SUFFIX_RE.sub("", text).strip()
     if candidate != text and (
-        candidate in OFFICIAL_BAIRROS or candidate in SUB_BAIRRO_TO_BAIRRO_MAP.values()
+        candidate in OFFICIAL_BAIRROS
+        or candidate in SUB_BAIRRO_TO_BAIRRO_MAP.values()
+        or candidate in SUB_BAIRRO_TO_BAIRRO_MAP
     ):
         return candidate
     return text

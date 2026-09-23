@@ -3,17 +3,21 @@
 import pandas as pd
 
 from srag.data.analytics.filters import outcome_death_mask
-from srag.data.loader import OFFICIAL_BAIRROS, SUB_BAIRRO_TO_BAIRRO_MAP
+from srag.data.loader import (
+    MISSING_BAIRRO_LABEL,
+    OFFICIAL_BAIRROS,
+    RURAL_AGGREGATE_LABEL,
+    SUB_BAIRRO_TO_BAIRRO_MAP,
+)
 
-RURAL_AGGREGATE_LABEL = "AREA RURAL DE MOSSORO"
-
-# Bairro ausente na notificação: linha própria (convenção da referência),
-# nunca fundido no agregado rural.
-MISSING_BAIRRO_LABEL = "NAO INFORMADO"
-
-# Tudo que é bairro: oficiais + pais canônicos do mapa de sub-bairros.
+# Tudo que é bairro: oficiais + pais canônicos do mapa de sub-bairros
+# + o agregado rural explícito (categoria de primeira classe, não oficial).
 # O resto (sítio, assentamento, localidade não-oficial) é área rural.
-BAIRRO_LABELS = frozenset(OFFICIAL_BAIRROS) | frozenset(SUB_BAIRRO_TO_BAIRRO_MAP.values())
+BAIRRO_LABELS = (
+    frozenset(OFFICIAL_BAIRROS)
+    | frozenset(SUB_BAIRRO_TO_BAIRRO_MAP.values())
+    | {RURAL_AGGREGATE_LABEL}
+)
 
 
 def normalize_territory_labels(df: pd.DataFrame) -> pd.DataFrame:
