@@ -27,17 +27,18 @@ def test_normalize_bairro_name() -> None:
     assert _normalize_bairro_name("  ") is None
 
     # Test sub-bairro mappings
-    assert _normalize_bairro_name("ABOLICAO 4") == "ABOLICAO"
+    assert _normalize_bairro_name("ABOLICAO 4") == "ABOLICOES"
     assert _normalize_bairro_name("MALVINAS") == "DOM JAIME CAMARA"
     assert _normalize_bairro_name("VINGT ROSADO") == "RINCAO"
+    assert _normalize_bairro_name("TRINTA DE SETEMBRO") == "RINCAO"
     assert _normalize_bairro_name("MONSENHOR AMERICO") == "MONSENHOR ALFREDO SIMONETI"
-    assert _normalize_bairro_name("TEIMOSOS") == "PRESIDENTE COSTA E SILVA"
+    assert _normalize_bairro_name("TEIMOSOS") == "COSTA E SILVA"
     assert _normalize_bairro_name("BOA ESPERANCA") == "SANTA DELMIRA"
 
     # Test generic prefix stripping before mapping
     assert _normalize_bairro_name("CONJ. VINGT ROSADO") == "RINCAO"
-    assert _normalize_bairro_name("CONJUNTO GERALDO MELO") == "PRESIDENTE COSTA E SILVA"
-    assert _normalize_bairro_name("COMUNIDADE DO CIGANO") == "ABOLICAO"
+    assert _normalize_bairro_name("CONJUNTO GERALDO MELO") == "COSTA E SILVA"
+    assert _normalize_bairro_name("COMUNIDADE DO CIGANO") == "ABOLICOES"
     assert _normalize_bairro_name("MONS. AMERICO") == "MONSENHOR ALFREDO SIMONETI"
 
     # Test dynamic typo/fuzzy matching
@@ -45,12 +46,29 @@ def test_normalize_bairro_name() -> None:
     assert _normalize_bairro_name("URICK GRAF") == "ALTO DE SAO MANOEL"
     assert _normalize_bairro_name("ALFREDO SIMONNETI") == "MONSENHOR ALFREDO SIMONETI"
     assert _normalize_bairro_name("INDEPENCIA") == "REDENCAO"
-    assert _normalize_bairro_name("LIBERDADE 1") == "PLANALTO TREZE DE MAIO"
-    assert _normalize_bairro_name("LIBERDADE I E II") == "PLANALTO TREZE DE MAIO"
+    assert _normalize_bairro_name("LIBERDADE 1") == "PLANALTO 13 DE MAIO"
+    assert _normalize_bairro_name("LIBERDADE I E II") == "PLANALTO 13 DE MAIO"
     assert _normalize_bairro_name("INDEPENDENCIA I E II") == "REDENCAO"
-    assert _normalize_bairro_name("LEBERDADE 1") == "PLANALTO TREZE DE MAIO"
-    assert _normalize_bairro_name("LIBERTADE 1") == "PLANALTO TREZE DE MAIO"
-    assert _normalize_bairro_name("ABILICAO") == "ABOLICAO"
+    assert _normalize_bairro_name("LEBERDADE 1") == "PLANALTO 13 DE MAIO"
+    assert _normalize_bairro_name("LIBERTADE 1") == "PLANALTO 13 DE MAIO"
+    assert _normalize_bairro_name("ABILICAO") == "ABOLICOES"
+
+    # Test SINAN 01-30 canonicals resolve to themselves
+    assert _normalize_bairro_name("ALAGADOS") == "ALAGADOS"
+    assert _normalize_bairro_name("COSTA E SILVA") == "COSTA E SILVA"
+    assert _normalize_bairro_name("GOV DIX SEPT ROSADO") == "GOV DIX SEPT ROSADO"
+    assert _normalize_bairro_name("PLANALTO 13 DE MAIO") == "PLANALTO 13 DE MAIO"
+    assert _normalize_bairro_name("CIDADE OESTE") == "ITAPETINGA"
+    assert _normalize_bairro_name("CIDADA OESTE") == "ITAPETINGA"
+
+    # Test legacy GeoJSON labels resolve to the SINAN canonical
+    assert _normalize_bairro_name("PRESIDENTE COSTA E SILVA") == "COSTA E SILVA"
+    assert _normalize_bairro_name("DIX-SEPT ROSADO") == "GOV DIX SEPT ROSADO"
+    assert _normalize_bairro_name("PLANALTO TREZE DE MAIO") == "PLANALTO 13 DE MAIO"
+
+    # Test exact vs rural: only exact SAO JOSE maps to PAREDOES
+    assert _normalize_bairro_name("SAO JOSE") == "PAREDOES"
+    assert _normalize_bairro_name("SITIO SAO JOSE") == "SITIO SAO JOSE"
 
 
 def test_strip_variant_suffix() -> None:

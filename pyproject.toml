@@ -19,6 +19,7 @@ dependencies = [
     "fpdf2>=2.8.8",
     "defusedxml>=0.7.1",
     "rapidfuzz>=3.0",
+    "shapely>=2.0",
 ]
 
 [tool.ruff]

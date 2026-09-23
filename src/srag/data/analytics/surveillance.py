@@ -245,6 +245,93 @@ def classificar_status_gripe(row: pd.Series | dict[str, Any]) -> str:
     return _handle_vacina_status(vacina, dt_dose, dt_sintoma, label_prefix, is_crianca_8y)
 
 
+def classificar_status_gripe_vectorized(df: pd.DataFrame) -> pd.Series:
+    """Vectorized batch classification of flu vaccination status.
+
+    Fast path: handles the vast majority of records (adults, VACINA ∈ {1,2,NaN,9})
+    with boolean masks avoiding row-by-row Python iteration.
+    Complex edge cases (babies < 6 months, children 6m-8y) fall back to the
+    scalar function only for those rows, which are typically a small fraction.
+    """
+    n = len(df)
+    if n == 0:
+        return pd.Series(dtype="object")
+
+    result = pd.Series("ignorado", index=df.index, dtype="object")
+
+    vacina = pd.to_numeric(df.get("VACINA", pd.Series(dtype=float)), errors="coerce")  # type: ignore[call-overload]
+    tp_idade = pd.to_numeric(df.get("TP_IDADE", pd.Series(dtype=float)), errors="coerce")  # type: ignore[call-overload]
+    nu_idade = pd.to_numeric(df.get("NU_IDADE_N", pd.Series(dtype=float)), errors="coerce")  # type: ignore[call-overload]
+
+    # Identify edge-case rows that require multi-column date logic
+    is_menor_6m_mask = (tp_idade == 1) | ((tp_idade == 2) & (nu_idade < 6))
+    is_crianca_8y_mask = ((tp_idade == 2) & (nu_idade >= 6)) | (
+        (tp_idade == 3) & (nu_idade <= 8)
+    )
+    edge_case_mask = is_menor_6m_mask | is_crianca_8y_mask
+
+    # --- Fast path: standard adults (no edge-case age groups) ---
+    std_mask = ~edge_case_mask
+
+    # Ignorado: vacina is NaN or 9
+    ignorado_mask = std_mask & (vacina.isna() | (vacina == 9))
+    result[ignorado_mask] = "ignorado"
+
+    # Não vacinado: vacina == 2 with no dose date
+    nao_vac_mask = std_mask & (vacina == 2)
+    result[nao_vac_mask] = "nao_vacinado"
+
+    # Vacinado: vacina == 1 - needs date comparison
+    vac1_mask = std_mask & (vacina == 1)
+    if vac1_mask.any():
+        dt_dose_raw = df.get("DT_UT_DOSE", pd.Series(dtype=object))
+        dt_sin_raw = df.get("DT_SIN_PRI", pd.Series(dtype=object))
+        dt_dose = pd.to_datetime(dt_dose_raw, errors="coerce", dayfirst=True)
+        dt_sin = pd.to_datetime(dt_sin_raw, errors="coerce", dayfirst=True)
+
+        vac1_rows = df[vac1_mask].index
+
+        has_dose = dt_dose[vac1_rows].notna()
+        has_sin = dt_sin[vac1_rows].notna()
+        both = has_dose & has_sin
+
+        # No dose date → ignorado (already set as default)
+        result[vac1_rows[~has_dose]] = "ignorado"
+
+        # Has dose but no symptom → ignorado
+        result[vac1_rows[has_dose & ~has_sin]] = "ignorado"
+
+        # Has both: check ordering and campaign date
+        both_idx = vac1_rows[both]
+        d_dose = dt_dose[both_idx]
+        d_sin = dt_sin[both_idx]
+
+        # Inconsistência: dose after symptoms
+        incons = d_dose > d_sin
+        result[both_idx[incons]] = "inconsistencia"
+
+        # For valid rows, check if dose is within the campaign year
+        valid_idx = both_idx[~incons]
+        if len(valid_idx):
+            d_dose_v = d_dose[valid_idx]
+            d_sin_v = d_sin[valid_idx]
+            ano_v = d_sin_v.dt.year
+
+            campaign_start = ano_v.map(
+                lambda y: pd.Timestamp(CAMPANHAS_GRIPE.get(y, date(y, 4, 1)))
+            )
+            within_campaign = d_dose_v >= campaign_start
+            result[valid_idx[within_campaign]] = "protegido"
+            result[valid_idx[~within_campaign]] = "vencida"
+
+    # --- Slow path: edge-case rows (babies / young children) ---
+    if edge_case_mask.any():
+        edge_results = df[edge_case_mask].apply(classificar_status_gripe, axis=1)
+        result[edge_case_mask] = edge_results
+
+    return result
+
+
 def compute_time_series(df: pd.DataFrame) -> pd.DataFrame:
     """Group cases by epidemiological week for trend analysis."""
     if df.empty:

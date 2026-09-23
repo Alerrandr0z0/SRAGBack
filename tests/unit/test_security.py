@@ -41,8 +41,8 @@ class TestCORS:
         assert resp.headers.get("access-control-allow-credentials") != "true"
 
     def test_cors_methods_restricted(self):
-        # Auth endpoints (/auth/*, /user/*) need POST + DELETE, so the
-        # allowlist is exactly GET/POST/DELETE/OPTIONS — no PUT/PATCH/TRACE.
+        # Auth endpoints (/auth/*, /user/*) need POST + PUT + DELETE, so the
+        # allowlist is exactly GET/POST/PUT/DELETE/OPTIONS — no PATCH/TRACE.
         resp = client.options(
             "/health",
             headers={
@@ -54,7 +54,7 @@ class TestCORS:
             m.strip()
             for m in resp.headers.get("access-control-allow-methods", "").split(",")
         }
-        assert allow_methods == {"GET", "POST", "DELETE", "OPTIONS"}
+        assert allow_methods == {"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 
 
 class TestInputValidation:

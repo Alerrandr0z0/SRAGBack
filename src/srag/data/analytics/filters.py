@@ -2,7 +2,12 @@
 
 import pandas as pd
 
-from srag.data.loader import OFFICIAL_BAIRROS, SUB_BAIRRO_TO_BAIRRO_MAP
+from srag.data.loader import (
+    MISSING_BAIRRO_LABEL,
+    OFFICIAL_BAIRROS,
+    RURAL_AGGREGATE_LABEL,
+    SUB_BAIRRO_TO_BAIRRO_MAP,
+)
 from srag.data.references import DEATH_OUTCOMES
 
 
@@ -45,13 +50,17 @@ def _filter_by_bairros(df: pd.DataFrame, bairros: list[str] | None) -> pd.DataFr
         .isin(bairro_norm)
     )
     # "NAO INFORMADO" tem linha própria, nunca fundido no agregado rural.
-    if "AREA RURAL DE MOSSORO" in bairro_norm:
-        official = frozenset(OFFICIAL_BAIRROS) | frozenset(SUB_BAIRRO_TO_BAIRRO_MAP.values())
+    if RURAL_AGGREGATE_LABEL in bairro_norm:
+        official = (
+            frozenset(OFFICIAL_BAIRROS)
+            | frozenset(SUB_BAIRRO_TO_BAIRRO_MAP.values())
+            | {RURAL_AGGREGATE_LABEL}
+        )
         names = df["BAIRRO_REF"].fillna("").astype(str).str.upper().str.strip()
         mask = (
             mask
             | (names == "ZONA RURAL")
-            | ((~names.isin(official)) & (~names.isin({"NAO INFORMADO", ""})))
+            | ((~names.isin(official)) & (~names.isin({MISSING_BAIRRO_LABEL, ""})))
         )
     return df[mask]
 
