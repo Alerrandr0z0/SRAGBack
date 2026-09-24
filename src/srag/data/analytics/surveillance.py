@@ -265,9 +265,7 @@ def classificar_status_gripe_vectorized(df: pd.DataFrame) -> pd.Series:
 
     # Identify edge-case rows that require multi-column date logic
     is_menor_6m_mask = (tp_idade == 1) | ((tp_idade == 2) & (nu_idade < 6))
-    is_crianca_8y_mask = ((tp_idade == 2) & (nu_idade >= 6)) | (
-        (tp_idade == 3) & (nu_idade <= 8)
-    )
+    is_crianca_8y_mask = ((tp_idade == 2) & (nu_idade >= 6)) | ((tp_idade == 3) & (nu_idade <= 8))
     edge_case_mask = is_menor_6m_mask | is_crianca_8y_mask
 
     # --- Fast path: standard adults (no edge-case age groups) ---
@@ -360,8 +358,6 @@ def compute_virus_distribution(df: pd.DataFrame) -> pd.DataFrame:
         columns=["_prio"]
     )
     return result.reset_index(drop=True)
-
-
 
 
 def compute_rt_pcr_summary(df: pd.DataFrame) -> dict[str, float | int]:

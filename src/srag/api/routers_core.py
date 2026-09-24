@@ -42,7 +42,9 @@ def get_summary(
         years_series = epi_week_year(dt_s).dropna()
         available_years = sorted({int(y) for y in years_series})
 
-    df = apply_global_filters(df_all, filters.bairros)
+    df = apply_global_filters(
+        df_all, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     df = apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
     if df.empty:
         return sanitize_data(
@@ -88,7 +90,9 @@ def get_trends(
     last_n_weeks: int = 26,
 ) -> TrendsResponse:
     df = get_df()
-    df = apply_global_filters(df, filters.bairros)
+    df = apply_global_filters(
+        df, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     df = apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
     if df.empty:
         return {"history": []}
@@ -111,7 +115,9 @@ def get_virus(
     filters: CommonFiltersDep,
 ) -> list[VirusDistributionItem]:
     df = get_df()
-    df = apply_global_filters(df, filters.bairros)
+    df = apply_global_filters(
+        df, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     df = apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
     if df.empty:
         return []

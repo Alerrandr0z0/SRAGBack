@@ -24,7 +24,9 @@ def territory_bootstrap(
     min_cases: int = Query(5, ge=1),
 ) -> Any:
     df = get_df()
-    df = apply_global_filters(df, filters.bairros)
+    df = apply_global_filters(
+        df, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     df = apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
 
     if df.empty:

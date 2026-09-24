@@ -12,6 +12,8 @@ virus, territory_bootstrap, laboratory_network, vaccination_profile,
 citizen_bootstrap, comorbidities_pareto.
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 from fastapi.testclient import TestClient
