@@ -34,7 +34,9 @@ router = APIRouter(tags=["clinical"])
 
 
 def _apply_base_filters(df: pd.DataFrame, filters: CommonFiltersDep) -> pd.DataFrame:
-    df = apply_global_filters(df, filters.bairros)
+    df = apply_global_filters(
+        df, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     return apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
 
 
@@ -53,7 +55,11 @@ def vaccination_profile(
     # gripe = qualquer status diferente de não vacinado/ignorado/inconsistência;
     # vacinado contra COVID = VACINA_COV == 1 (dicionário, campo 36).
     gripe_vacinados = int(
-        sum(v for k, v in raw_gripe.items() if k not in ("nao_vacinado", "ignorado", "inconsistencia"))
+        sum(
+            v
+            for k, v in raw_gripe.items()
+            if k not in ("nao_vacinado", "ignorado", "inconsistencia")
+        )
     )
     covid_vacinados = int(pd.to_numeric(df["VACINA_COV"], errors="coerce").eq(1).sum())
 

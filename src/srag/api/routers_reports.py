@@ -84,7 +84,9 @@ def bairros_pdf(
             detail="A semana inicial deve ser menor ou igual à semana final.",
         )
     df = get_df()
-    df = apply_global_filters(df, filters.bairros)
+    df = apply_global_filters(
+        df, filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
     df = apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
 
     # Regra do bairro oficial (mesma da tabela): só OFFICIAL_BAIRROS é bairro.
@@ -123,9 +125,7 @@ def bairros_pdf(
 
     base_parts: list[str] = []
     if filters.agents:
-        base_parts.append(
-            "Agente(s) " + ", ".join(AGENT_LABELS.get(a, a) for a in filters.agents)
-        )
+        base_parts.append("Agente(s) " + ", ".join(AGENT_LABELS.get(a, a) for a in filters.agents))
     base_parts.append("Escopo Dados notificados")
     base_suffix = " | ".join(base_parts)
 
@@ -133,17 +133,13 @@ def bairros_pdf(
     if len(years_in_data) == 1:
         content = _single_year_pdf(scoped, start_week, end_week, filters, base_suffix)
     else:
-        content = _all_years_pdf(
-            scoped, start_week, end_week, filters, base_suffix, years_in_data
-        )
+        content = _all_years_pdf(scoped, start_week, end_week, filters, base_suffix, years_in_data)
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     return Response(
         content=content,
         media_type="application/pdf",
-        headers={
-            "Content-Disposition": f"attachment; filename=relatorio-bairros-{stamp}.pdf"
-        },
+        headers={"Content-Disposition": f"attachment; filename=relatorio-bairros-{stamp}.pdf"},
     )
 
 
@@ -195,9 +191,7 @@ def _single_year_pdf(
     columns = sorted(
         {
             (int(y), int(w))
-            for y, w in zip(
-                scoped["_epi_year"], scoped["_epi_week_int"], strict=True
-            )
+            for y, w in zip(scoped["_epi_year"], scoped["_epi_week_int"], strict=True)
         }
     )
     if not columns:
@@ -214,16 +208,12 @@ def _single_year_pdf(
         week_counts = sub["_epi_week_int"].value_counts()
         weeks = week_counts.index.tolist()
         totals = week_counts.tolist()
-        counts[name] = {
-            int(w): int(c) for w, c in zip(weeks, totals, strict=True)
-        }
+        counts[name] = {int(w): int(c) for w, c in zip(weeks, totals, strict=True)}
     weeks = [w for _, w in columns]
     week_headers = [f"SE {w}" for w in weeks]
     subtitle_parts = [f"Semanas {start_week} a {end_week}"]
     if filters.years:
-        subtitle_parts.append(
-            "Ano(s) " + ", ".join(str(y) for y in sorted(filters.years))
-        )
+        subtitle_parts.append("Ano(s) " + ", ".join(str(y) for y in sorted(filters.years)))
     subtitle_parts.append(base_suffix)
     return build_neighborhood_weekly_pdf(
         _matrix_rows(counts, weeks), week_headers, " | ".join(subtitle_parts)
@@ -264,9 +254,7 @@ def _all_years_pdf(
                 "title": title,
                 "rows": _matrix_rows(_counts_by_bairro_week(frame), weeks),
                 "week_headers": week_headers,
-                "subtitle": (
-                    f"Ano {year} | Semanas {start_week} a {end_week} | {base_suffix}"
-                ),
+                "subtitle": (f"Ano {year} | Semanas {start_week} a {end_week} | {base_suffix}"),
             }
         )
     return build_neighborhood_report_pdf(pages)

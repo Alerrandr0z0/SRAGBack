@@ -51,8 +51,7 @@ class TestCORS:
             },
         )
         allow_methods = {
-            m.strip()
-            for m in resp.headers.get("access-control-allow-methods", "").split(",")
+            m.strip() for m in resp.headers.get("access-control-allow-methods", "").split(",")
         }
         assert allow_methods == {"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 
@@ -77,6 +76,32 @@ class TestInputValidation:
     def test_years_filter_valid(self):
         resp = client.get("/summary?years=2020")
         assert resp.status_code in (200, 422)
+
+    def test_base_invalid_value_rejected(self):
+        resp = client.get("/summary?base=invalido")
+        assert resp.status_code == 422
+
+    def test_base_valid_values_pass_validation(self):
+        for value in ("notificados", "confirmados", "obitos"):
+            resp = client.get(f"/summary?base={value}")
+            assert resp.status_code != 422
+
+    def test_gravidade_invalid_value_rejected(self):
+        resp = client.get("/summary?gravidade=invalido")
+        assert resp.status_code == 422
+
+    def test_gravidade_valid_values_pass_validation(self):
+        for value in ("todos", "uti", "internacao", "ventilacao"):
+            resp = client.get(f"/summary?gravidade={value}")
+            assert resp.status_code != 422
+
+    def test_sintomas_invalid_value_rejected(self):
+        resp = client.get("/summary?sintomas=chave_invalida")
+        assert resp.status_code == 422
+
+    def test_sintomas_valid_value_passes_validation(self):
+        resp = client.get("/summary?sintomas=febre&sintomas=tosse")
+        assert resp.status_code != 422
 
 
 class TestDynamicSQL:

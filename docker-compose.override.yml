@@ -1,0 +1,9 @@
+services:
+  frontend-dev:
+    network_mode: ""
+    networks:
+      - srag_network
+    ports:
+      - "5174:5174"
+    environment:
+      - VITE_API_TARGET=http://backend:8000
