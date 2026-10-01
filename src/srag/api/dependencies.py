@@ -40,8 +40,8 @@ def _validate_classi(classi: list[int] | None) -> None:
     if classi is None:
         return
     for c in classi:
-        if not (1 <= c <= 9):
-            raise HTTPException(status_code=422, detail=f"Classi {c} out of range [1, 9]")
+        if not (1 <= c <= 11):
+            raise HTTPException(status_code=422, detail=f"Classi {c} out of range [1, 11]")
 
 
 def _validate_base(base: str | None) -> None:

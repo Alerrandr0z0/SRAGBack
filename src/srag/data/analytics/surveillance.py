@@ -96,6 +96,70 @@ def normalize_agent_values(values: list[str] | None) -> set[str]:
             normalized.add(AGENT_FILTER_ALIASES.get(upper, upper))
     return normalized
 
+def infer_influenza_type(df: pd.DataFrame) -> pd.Series:
+    """Infere a classificação detalhada de Influenza mapeando para os IDs (1 a 11) do frontend."""
+    if df.empty:
+        return pd.Series(dtype=str)
+
+    result = pd.Series(["11"] * len(df), index=df.index)
+
+    def get_col(col: str) -> pd.Series:
+        if col in df.columns:
+            return pd.to_numeric(df[col], errors="coerce")
+        return pd.Series([np.nan] * len(df), index=df.index)
+
+    classi_fin = get_col("CLASSI_FIN")
+    pos_pcr = get_col("POS_PCRFLU")
+    pos_an = get_col("POS_AN_FLU")
+    tp_pcr = get_col("TP_FLU_PCR")
+    tp_an = get_col("TP_FLU_AN")
+    fluasu = get_col("PCR_FLUASU")
+    flubli = get_col("PCR_FLUBLI")
+
+    is_flu = (classi_fin == 1) | (pos_pcr == 1) | (pos_an == 1)
+    
+    is_tipo_a = is_flu & ((tp_pcr == 1) | (tp_an == 1))
+    is_tipo_b = is_flu & ((tp_pcr == 2) | (tp_an == 2))
+
+    result.loc[is_flu] = "10"   
+    result.loc[is_tipo_a] = "2" 
+    result.loc[is_tipo_b] = "3" 
+
+    result.loc[is_tipo_a & (fluasu == 1)] = "4" 
+    result.loc[is_tipo_a & (fluasu == 2)] = "5" 
+    result.loc[is_tipo_a & (fluasu == 3)] = "6" 
+    result.loc[is_tipo_a & (fluasu == 4)] = "7" 
+
+    result.loc[is_tipo_b & (flubli == 1)] = "8" 
+    result.loc[is_tipo_b & (flubli == 2)] = "9" 
+
+    return result
+
+
+def normalize_influenza_values(values: list[str | int] | None) -> set[str]:
+    """
+    Normaliza a requisição do front e faz a 'expansão de nós' da hierarquia.
+    Garante que buscar por "Tipo A" retorne também os casos subtipados (H1N1, H3N2, etc).
+    """
+    if not values:
+        return set()
+
+    normalized: set[str] = set()
+    
+    hierarchy_expansion = {
+        "1": {"2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
+        "2": {"2", "4", "5", "6", "7"},                      
+        "3": {"3", "8", "9"},                                
+    }
+
+    for raw in values:
+        val = str(raw).strip()
+        if val in hierarchy_expansion:
+            normalized.update(hierarchy_expansion[val])
+        else:
+            normalized.add(val)
+            
+    return normalized
 
 def _is_baby_under_6m(nu_idade: float, tp_idade: float | str | None) -> bool:
     """Determine if patient is under 6 months old."""

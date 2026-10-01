@@ -21,7 +21,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 30s
     restart: unless-stopped
     networks:
       - srag_network

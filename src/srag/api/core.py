@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 
-from srag.data.analytics import infer_etiologic_agent, normalize_agent_values
+from srag.data.analytics import infer_etiologic_agent, normalize_agent_values, infer_influenza_type, normalize_influenza_values 
 from srag.data.analytics.filters import epi_week_year
 from srag.data.database import DB_URL
 from srag.utils.epi_weeks import compute_epi_week_columns
@@ -46,13 +46,25 @@ def sanitize_data(obj: Any) -> Any:  # noqa: ANN401
     return obj
 
 
+def _num(df: pd.DataFrame, col: str) -> pd.Series:
+    """Coluna numérica; se não existir, devolve NaN (nunca casa)."""
+    if col in df.columns:
+        return pd.to_numeric(df[col], errors="coerce")
+    return pd.Series(float("nan"), index=df.index)
+
+
 def apply_surveillance_filters(
     df: pd.DataFrame,
     years: list[int] | None = None,
     agents: list[str] | None = None,
     classi: list[int] | None = None,
 ) -> pd.DataFrame:
-    """Apply temporal, etiologic-agent and final-classification filters.
+    """Apply temporal, etiologic-agent and influenza type/subtype filters.
+
+    - years:  semana epidemiológica (DT_SIN_PRI)
+    - agents: agente etiológico, via CLASSI_FIN (1=Influenza, 2=Outro vírus
+              respiratório, 3=Outro agente, 4=Não especificado, 5=Covid-19)
+    - classi: tipo/subtipo de influenza (ids do ClassiSelector)
 
     Shared by all surveillance endpoints so ``years/agents/classi`` behave
     identically everywhere.
@@ -63,11 +75,21 @@ def apply_surveillance_filters(
         dt_s = pd.to_datetime(out["DT_SIN_PRI"], errors="coerce")
         se_years = epi_week_year(dt_s)
         out = out[se_years.isin(year_values)]
+
     if agents:
-        agent_norm = normalize_agent_values(agents)
-        out = out[infer_etiologic_agent(out).str.upper().isin(agent_norm)]
-    if classi and "CLASSI_FIN" in out.columns:
-        out = out[pd.to_numeric(out["CLASSI_FIN"], errors="coerce").isin(set(classi))]
+        agent_values = [str(a).strip() for a in agents]
+        if all(a.isdigit() for a in agent_values) and "CLASSI_FIN" in out.columns:
+            codes = {int(a) for a in agent_values}
+            out = out[_num(out, "CLASSI_FIN").isin(codes)]
+        else:
+            agent_norm = normalize_agent_values(agents)
+            out = out[infer_etiologic_agent(out).str.upper().isin(agent_norm)]
+
+    if classi:
+        raw = {str(c) for c in classi}
+        if "11" not in raw:  
+            wanted = normalize_influenza_values(list(raw))
+            out = out[infer_influenza_type(out).isin(wanted)]
     return out
 
 

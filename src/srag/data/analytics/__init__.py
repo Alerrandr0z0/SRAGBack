@@ -27,6 +27,8 @@ from srag.data.analytics.surveillance import (
     compute_virus_distribution,
     infer_etiologic_agent,
     normalize_agent_values,
+    infer_influenza_type, 
+    normalize_influenza_values,
 )
 from srag.data.analytics.territorial import (
     BAIRRO_LABELS,
