@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 def register_routes(app: FastAPI) -> None:
     """Register the API endpoints on the FastAPI app."""
+    from srag.api.routers_analytics import router as analytics_router
     from srag.api.routers_auth import router as auth_router
     from srag.api.routers_clinical import router as clinical_router
     from srag.api.routers_core import router as core_router
@@ -24,6 +25,7 @@ def register_routes(app: FastAPI) -> None:
         app.include_router(core_router, prefix=prefix)
         app.include_router(territory_router, prefix=prefix)
         app.include_router(clinical_router, prefix=prefix)
+        app.include_router(analytics_router, prefix=prefix)
         app.include_router(ingest_router, prefix=prefix)
         app.include_router(manage_router, prefix=prefix)
         app.include_router(reports_router, prefix=prefix)

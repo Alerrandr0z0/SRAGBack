@@ -1,5 +1,11 @@
 """Core analytics and aggregation for Mossoró SRAG data (lean: 12 tópicos)."""
 
+from srag.data.analytics.advanced import (
+    SIGNATURE_PROFILES,
+    compute_clinical_flow,
+    compute_comorbidities_odds_ratio,
+    compute_symptoms_signature,
+)
 from srag.data.analytics.clinical import (
     compute_comorbidities_pareto,
     compute_flu_vaccination_donut,
@@ -26,8 +32,8 @@ from srag.data.analytics.surveillance import (
     compute_time_series,
     compute_virus_distribution,
     infer_etiologic_agent,
+    infer_influenza_type,
     normalize_agent_values,
-    infer_influenza_type, 
     normalize_influenza_values,
 )
 from srag.data.analytics.territorial import (
@@ -43,12 +49,15 @@ __all__ = [
     "BAIRRO_LABELS",
     "MISSING_BAIRRO_LABEL",
     "RURAL_AGGREGATE_LABEL",
+    "SIGNATURE_PROFILES",
     "age_years",
     "apply_global_filters",
     "categorize_age",
     "classificar_status_gripe",
     "compute_age_pareto",
     "compute_citizen_pyramid",
+    "compute_clinical_flow",
+    "compute_comorbidities_odds_ratio",
     "compute_comorbidities_pareto",
     "compute_covid_vaccination_profile",
     "compute_flu_vaccination_donut",
@@ -58,12 +67,15 @@ __all__ = [
     "compute_risk_factors_full_profile",
     "compute_rt_pcr_summary",
     "compute_schooling_profile",
+    "compute_symptoms_signature",
     "compute_territory_distribution",
     "compute_time_series",
     "compute_virus_distribution",
     "compute_zone_distribution",
     "infer_etiologic_agent",
+    "infer_influenza_type",
     "normalize_agent_values",
+    "normalize_influenza_values",
     "normalize_territory_labels",
     "outcome_death_mask",
 ]
