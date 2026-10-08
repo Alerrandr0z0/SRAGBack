@@ -67,3 +67,46 @@ class ComorbiditiesParetoItem(TypedDict):
 
 
 ComorbiditiesParetoResponse = list[ComorbiditiesParetoItem]
+
+
+class ClinicalFlowNode(TypedDict):
+    """Sankey node."""
+
+    name: str
+
+
+class ClinicalFlowLink(TypedDict):
+    """Sankey link between two stages of the patient journey."""
+
+    source: str
+    target: str
+    value: int
+    pct: float
+
+
+class ClinicalFlowResponse(TypedDict):
+    """Patient journey: origin -> ICU/ward -> ventilatory support -> outcome."""
+
+    nodes: list[ClinicalFlowNode]
+    links: list[ClinicalFlowLink]
+
+
+class OddsRatioRow(TypedDict):
+    """Risk factor with frequency, lethality and Odds Ratio (95% CI)."""
+
+    name: str
+    value: int
+    deaths: int
+    lethality: float
+    prevalence: float
+    odds_ratio: float
+    ci_lower: float
+    ci_upper: float
+
+
+class SymptomsSignatureResponse(TypedDict):
+    """Symptom prevalence per age band; each cell is [prevalence %, case count]."""
+
+    labels: list[str]
+    bands: list[str]
+    matrices: dict[str, list[list[list[float]]]]
