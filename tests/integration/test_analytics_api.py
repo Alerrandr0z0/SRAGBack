@@ -165,3 +165,18 @@ class TestLabEndpoints:
     def test_filters_are_validated(self, mock_srag_df) -> None:
         for path in ("lab_performance", "sample_positivity", "antiviral_windows"):
             assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422
+
+
+class TestNotificationDelayEndpoint:
+    def test_response_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/notification_delay").json()
+        assert {"limit_days", "overall", "bairros", "hidden_count", "min_cases"} <= set(body)
+        assert body["limit_days"] == 7
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        body = client.get("/analytics/notification_delay").json()
+        assert body["bairros"] == []
+        assert body["overall"]["median_days"] is None
+
+    def test_filters_are_validated(self, mock_srag_df) -> None:
+        assert client.get("/analytics/notification_delay", params={"base": "x"}).status_code == 422

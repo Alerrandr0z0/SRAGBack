@@ -15,6 +15,7 @@ import pandas as pd
 
 from srag.data.analytics.filters import age_years, outcome_death_mask
 from srag.data.analytics.surveillance import infer_etiologic_agent
+from srag.data.loader import MISSING_BAIRRO_LABEL
 from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES
 
 # ---------------------------------------------------------------------------
@@ -971,4 +972,86 @@ def compute_imaging_severity(df: pd.DataFrame) -> dict[str, Any]:
         "min_cases": _MIN_GROUP_CASES,
         "xray": _imaging_findings(df, "RAIOX_RES", _XRAY_FINDINGS),
         "ct": _imaging_findings(df, "TOMO_RES", _CT_FINDINGS),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Território: atraso de notificação por bairro
+# ---------------------------------------------------------------------------
+
+NOTIFICATION_DELAY_LIMIT_DAYS = 7
+_DELAY_WARN_MEDIAN_DAYS = 5
+_DELAY_CRITICAL_MEDIAN_DAYS = 10
+_MAX_DELAY_DAYS = 60
+_MIN_BAIRRO_CASES = 5
+
+
+def _delay_status(median: float) -> str:
+    """Median delay up to 5 days is adequate, up to 10 needs attention, above is critical."""
+    if median <= _DELAY_WARN_MEDIAN_DAYS:
+        return "adequado"
+    if median <= _DELAY_CRITICAL_MEDIAN_DAYS:
+        return "atencao"
+    return "critico"
+
+
+def _delay_row(name: str, days: pd.Series) -> dict[str, Any]:
+    median = round(float(days.median()), 1)
+    return {
+        "bairro": name,
+        "total": len(days),
+        "median_days": median,
+        "mean_days": round(float(days.mean()), 1),
+        "within_limit_pct": _pct(int((days <= NOTIFICATION_DELAY_LIMIT_DAYS).sum()), len(days)),
+        "status": _delay_status(median),
+    }
+
+
+def compute_notification_delay(df: pd.DataFrame) -> dict[str, Any]:
+    """Days between the first symptoms and the notification, overall and per bairro.
+
+    Delay = DT_NOTIFIC - DT_SIN_PRI, kept when between 0 and 60 days. ``df`` should already
+    carry the normalized ``BAIRRO_REF`` (same labels as the territorial map and table).
+    Bairros with fewer than 5 cases are not ranked (only counted in ``hidden_count``), and
+    the "not informed" bucket is not a place, so it never appears in the ranking. The ranking
+    is ordered from the longest median delay to the shortest.
+    """
+    delays = (_date_column(df, "DT_NOTIFIC") - _date_column(df, "DT_SIN_PRI")).dt.days
+    valid = delays.between(0, _MAX_DELAY_DAYS)
+    days = delays[valid]
+
+    overall: dict[str, Any] = {
+        "total": len(days),
+        "median_days": round(float(days.median()), 1) if len(days) else None,
+        "within_limit_pct": (
+            _pct(int((days <= NOTIFICATION_DELAY_LIMIT_DAYS).sum()), len(days))
+            if len(days)
+            else None
+        ),
+    }
+    overall["status"] = (
+        None if overall["median_days"] is None else _delay_status(overall["median_days"])
+    )
+
+    bairros: list[dict[str, Any]] = []
+    hidden = 0
+    if "BAIRRO_REF" in df.columns and len(days):
+        frame = pd.DataFrame({"bairro": df["BAIRRO_REF"].astype(str).str.strip(), "days": days})
+        frame = frame.dropna(subset=["days"])  # drop cases whose delay was invalid
+        frame = frame[(frame["bairro"] != "") & (frame["bairro"] != MISSING_BAIRRO_LABEL)]
+        for name, group in frame.groupby("bairro"):
+            if len(group) < _MIN_BAIRRO_CASES:
+                hidden += 1
+            else:
+                bairros.append(_delay_row(str(name), group["days"]))
+        bairros.sort(key=lambda row: (-row["median_days"], -row["total"], row["bairro"]))
+
+    return {
+        "limit_days": NOTIFICATION_DELAY_LIMIT_DAYS,
+        "warn_days": _DELAY_WARN_MEDIAN_DAYS,
+        "critical_days": _DELAY_CRITICAL_MEDIAN_DAYS,
+        "min_cases": _MIN_BAIRRO_CASES,
+        "overall": overall,
+        "bairros": bairros,
+        "hidden_count": hidden,
     }
