@@ -15,16 +15,47 @@ from fastapi import APIRouter, HTTPException, Query
 
 from srag.api.core import apply_surveillance_filters, get_df, sanitize_data
 from srag.api.dependencies import CommonFiltersDep
-from srag.api.types import ClinicalFlowResponse, OddsRatioRow, SymptomsSignatureResponse
+from srag.api.types import (
+    AntiviralWindowsResponse,
+    ClinicalFlowResponse,
+    DiagnosticLethalityResponse,
+    DiagnosticMethodsResponse,
+    IcuAccessResponse,
+    ImagingSeverityResponse,
+    LabPerformanceResponse,
+    NosocomialRiskResponse,
+    OddsRatioRow,
+    SamplePositivityResponse,
+    SymptomsSignatureResponse,
+)
 from srag.data.analytics import (
+    ICU_GRANULARITIES,
     SIGNATURE_PROFILES,
     apply_global_filters,
+    compute_antiviral_windows,
     compute_clinical_flow,
     compute_comorbidities_odds_ratio,
+    compute_diagnostic_lethality,
+    compute_diagnostic_methods,
+    compute_icu_access,
+    compute_imaging_severity,
+    compute_lab_performance,
+    compute_nosocomial_risk,
+    compute_sample_positivity,
     compute_symptoms_signature,
 )
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
+
+
+def _check_granularity(granularity: str) -> None:
+    if granularity not in ICU_GRANULARITIES:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                f"granularity '{granularity}' invalid, expected one of {list(ICU_GRANULARITIES)}"
+            ),
+        )
 
 
 def _filtered_df(filters: CommonFiltersDep) -> pd.DataFrame:
@@ -62,3 +93,71 @@ def symptoms_signature(
         )
     result = compute_symptoms_signature(_filtered_df(filters), profile)
     return cast("SymptomsSignatureResponse", sanitize_data(result))
+
+
+@router.get("/icu_access")
+def icu_access(
+    filters: CommonFiltersDep,
+    granularity: Annotated[str, Query()] = "year",
+) -> IcuAccessResponse:
+    """Tempo entre a internação e a entrada na UTI, por ano, trimestre ou mês."""
+    _check_granularity(granularity)
+    result = compute_icu_access(_filtered_df(filters), granularity)
+    return cast("IcuAccessResponse", sanitize_data(result))
+
+
+@router.get("/diagnostic_methods")
+def diagnostic_methods(
+    filters: CommonFiltersDep,
+    granularity: Annotated[str, Query()] = "year",
+) -> DiagnosticMethodsResponse:
+    """Como os casos foram confirmados (laboratório x clínico), por período."""
+    _check_granularity(granularity)
+    result = compute_diagnostic_methods(_filtered_df(filters), granularity)
+    return cast("DiagnosticMethodsResponse", sanitize_data(result))
+
+
+@router.get("/nosocomial_risk")
+def nosocomial_risk(
+    filters: CommonFiltersDep,
+    granularity: Annotated[str, Query()] = "year",
+) -> NosocomialRiskResponse:
+    """Percentual de infecção hospitalar por período e letalidade por origem."""
+    _check_granularity(granularity)
+    result = compute_nosocomial_risk(_filtered_df(filters), granularity)
+    return cast("NosocomialRiskResponse", sanitize_data(result))
+
+
+@router.get("/diagnostic_lethality")
+def diagnostic_lethality(filters: CommonFiltersDep) -> DiagnosticLethalityResponse:
+    """Letalidade e tempo até o desfecho por método de confirmação."""
+    result = compute_diagnostic_lethality(_filtered_df(filters))
+    return cast("DiagnosticLethalityResponse", sanitize_data(result))
+
+
+@router.get("/lab_performance")
+def lab_performance(filters: CommonFiltersDep) -> LabPerformanceResponse:
+    """Qualidade operacional do diagnóstico: resultado, coleta, latência e tempo de resposta."""
+    result = compute_lab_performance(_filtered_df(filters))
+    return cast("LabPerformanceResponse", sanitize_data(result))
+
+
+@router.get("/sample_positivity")
+def sample_positivity(filters: CommonFiltersDep) -> SamplePositivityResponse:
+    """Positividade (RT-PCR ou antígeno) por tipo de amostra."""
+    result = compute_sample_positivity(_filtered_df(filters))
+    return cast("SamplePositivityResponse", sanitize_data(result))
+
+
+@router.get("/antiviral_windows")
+def antiviral_windows(filters: CommonFiltersDep) -> AntiviralWindowsResponse:
+    """Cura e óbito conforme a rapidez do início do antiviral."""
+    result = compute_antiviral_windows(_filtered_df(filters))
+    return cast("AntiviralWindowsResponse", sanitize_data(result))
+
+
+@router.get("/imaging_severity")
+def imaging_severity(filters: CommonFiltersDep) -> ImagingSeverityResponse:
+    """UTI e letalidade por resultado de Raio-X e de tomografia."""
+    result = compute_imaging_severity(_filtered_df(filters))
+    return cast("ImagingSeverityResponse", sanitize_data(result))
