@@ -12,6 +12,7 @@ from srag.data.analytics.advanced import (
     compute_imaging_severity,
     compute_lab_performance,
     compute_nosocomial_risk,
+    compute_notification_delay,
     compute_sample_positivity,
     compute_symptoms_signature,
 )
@@ -79,6 +80,7 @@ __all__ = [
     "compute_lab_performance",
     "compute_maternal_profile",
     "compute_nosocomial_risk",
+    "compute_notification_delay",
     "compute_population_pyramid",
     "compute_race_profile",
     "compute_risk_factors_full_profile",

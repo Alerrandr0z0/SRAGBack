@@ -24,6 +24,7 @@ from srag.api.types import (
     ImagingSeverityResponse,
     LabPerformanceResponse,
     NosocomialRiskResponse,
+    NotificationDelayResponse,
     OddsRatioRow,
     SamplePositivityResponse,
     SymptomsSignatureResponse,
@@ -41,9 +42,11 @@ from srag.data.analytics import (
     compute_imaging_severity,
     compute_lab_performance,
     compute_nosocomial_risk,
+    compute_notification_delay,
     compute_sample_positivity,
     compute_symptoms_signature,
 )
+from srag.data.analytics.territorial import normalize_territory_labels
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
@@ -161,3 +164,10 @@ def imaging_severity(filters: CommonFiltersDep) -> ImagingSeverityResponse:
     """UTI e letalidade por resultado de Raio-X e de tomografia."""
     result = compute_imaging_severity(_filtered_df(filters))
     return cast("ImagingSeverityResponse", sanitize_data(result))
+
+
+@router.get("/notification_delay")
+def notification_delay(filters: CommonFiltersDep) -> NotificationDelayResponse:
+    """Atraso entre os primeiros sintomas e a notificação, geral e por bairro."""
+    df = normalize_territory_labels(_filtered_df(filters))
+    return cast("NotificationDelayResponse", sanitize_data(compute_notification_delay(df)))

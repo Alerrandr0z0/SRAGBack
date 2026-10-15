@@ -372,3 +372,35 @@ class ImagingSeverityResponse(TypedDict):
     min_cases: int
     xray: ImagingGroup
     ct: ImagingGroup
+
+
+class NotificationDelayOverall(TypedDict):
+    """Delay between first symptoms and notification over every valid case."""
+
+    total: int
+    median_days: float | None
+    within_limit_pct: float | None
+    status: str | None
+
+
+class NotificationDelayBairro(TypedDict):
+    """Notification delay of one bairro."""
+
+    bairro: str
+    total: int
+    median_days: float
+    mean_days: float
+    within_limit_pct: float
+    status: str
+
+
+class NotificationDelayResponse(TypedDict):
+    """Notification delay overall and per bairro (longest median first)."""
+
+    limit_days: int
+    warn_days: int
+    critical_days: int
+    min_cases: int
+    overall: NotificationDelayOverall
+    bairros: list[NotificationDelayBairro]
+    hidden_count: int
