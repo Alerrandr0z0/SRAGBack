@@ -110,3 +110,265 @@ class SymptomsSignatureResponse(TypedDict):
     labels: list[str]
     bands: list[str]
     matrices: dict[str, list[list[list[float]]]]
+
+
+class IcuAccessStats(TypedDict):
+    """Wait-time bands (days between hospital admission and ICU entry)."""
+
+    total: int
+    same_day: int
+    d1_3: int
+    d4_7: int
+    d8_plus: int
+    median_wait_days: float | None
+
+
+class IcuAccessPeriod(IcuAccessStats):
+    """Wait-time bands of one period (year, quarter or month)."""
+
+    period: str
+
+
+class IcuAccessSummary(IcuAccessStats):
+    """Wait-time bands over every valid ICU admission."""
+
+    same_day_pct: float
+    over_limit: int
+    over_limit_pct: float
+    status: str | None
+
+
+class IcuAccessResponse(TypedDict):
+    """ICU access: summary plus one entry per period with enough admissions."""
+
+    granularity: str
+    limit_days: int
+    min_cases: int
+    summary: IcuAccessSummary
+    periods: list[IcuAccessPeriod]
+
+
+class DiagnosticMethodCounts(TypedDict):
+    """Cases per confirmation group."""
+
+    total: int
+    rt_pcr: int
+    antigeno_outros: int
+    clinico_epi: int
+    clinico_outros: int
+
+
+class DiagnosticMethodsPeriod(DiagnosticMethodCounts):
+    """Confirmation groups of one period."""
+
+    period: str
+
+
+class DiagnosticMethodsSummary(DiagnosticMethodCounts):
+    """Confirmation groups over every case."""
+
+    laboratory_pct: float
+    rt_pcr_pct: float
+
+
+class DiagnosticMethodsResponse(TypedDict):
+    """How cases were confirmed, per period."""
+
+    granularity: str
+    min_cases: int
+    summary: DiagnosticMethodsSummary
+    periods: list[DiagnosticMethodsPeriod]
+
+
+class OriginLethality(TypedDict):
+    """Lethality of one infection origin (hospital or community)."""
+
+    resolved: int
+    deaths: int
+    pct: float | None
+
+
+class NosocomialLethality(TypedDict):
+    """Hospital-acquired x community-acquired lethality."""
+
+    nosocomial: OriginLethality
+    community: OriginLethality
+
+
+class NosocomialSummary(TypedDict):
+    """Hospital-acquired infections over every case with known origin."""
+
+    known: int
+    nosocomial: int
+    nosocomial_pct: float
+    lethality: NosocomialLethality
+
+
+class NosocomialPeriod(TypedDict):
+    """Hospital-acquired share of one period."""
+
+    period: str
+    known: int
+    nosocomial: int
+    pct: float
+    alert: bool
+
+
+class NosocomialRiskResponse(TypedDict):
+    """Hospital-acquired infection share per period with an optional alert limit."""
+
+    granularity: str
+    min_cases: int
+    mean_pct: float | None
+    alert_limit_pct: float | None
+    summary: NosocomialSummary
+    periods: list[NosocomialPeriod]
+
+
+class DiagnosticLethalityMethod(TypedDict):
+    """Lethality and time to outcome of one confirmation method."""
+
+    method: str
+    cases: int
+    resolved: int
+    deaths: int
+    cfr: float
+    median_days: float | None
+    icu_pct: float
+
+
+class DiagnosticLethalityOverall(TypedDict):
+    """Lethality over every case with a known outcome."""
+
+    cases: int
+    resolved: int
+    deaths: int
+    cfr: float | None
+
+
+class DiagnosticLethalityResponse(TypedDict):
+    """Lethality ranked by confirmation method."""
+
+    min_resolved: int
+    overall: DiagnosticLethalityOverall
+    methods: list[DiagnosticLethalityMethod]
+    hidden: list[str]
+
+
+class LabIndicator(TypedDict):
+    """Share of cases meeting a lab indicator, with its target."""
+
+    count: int
+    pct: float
+    target_pct: int
+
+
+class LabWaitStats(TypedDict):
+    """Distribution of waits in days."""
+
+    count: int
+    mean: float | None
+    median: float | None
+    p90: float | None
+    p95: float | None
+
+
+class RtPcrLatency(LabWaitStats):
+    """RT-PCR latency with the share within the target."""
+
+    within_target_pct: float | None
+    target_days: int
+
+
+class Turnaround(LabWaitStats):
+    """Collection-to-result turnaround."""
+
+    target_days: int
+
+
+class LabPositivity(TypedDict):
+    """Positivity among cases with a lab result."""
+
+    tested: int
+    positive: int
+    pct: float | None
+
+
+class LabPerformanceResponse(TypedDict):
+    """Operational quality of the diagnostic network."""
+
+    total: int
+    result: LabIndicator
+    collection: LabIndicator
+    rt_pcr_latency: RtPcrLatency
+    turnaround: Turnaround
+    positivity: LabPositivity
+
+
+class SamplePositivityRow(TypedDict):
+    """Positivity of one sample type."""
+
+    sample_type: str
+    tested: int
+    positive: int
+    positivity_pct: float
+
+
+class SamplePositivityResponse(TypedDict):
+    """Positivity per sample type."""
+
+    min_tested: int
+    overall: LabPositivity
+    types: list[SamplePositivityRow]
+    hidden: list[str]
+
+
+class AntiviralWindow(TypedDict):
+    """Outcome of one antiviral start window."""
+
+    key: str
+    label: str
+    total: int
+    cure: int
+    death: int
+    cure_pct: float | None
+    death_pct: float | None
+
+
+class AntiviralWindowsResponse(TypedDict):
+    """Cure and death by how fast the antiviral started."""
+
+    treated: int
+    with_dates: int
+    median_days: float | None
+    within_2d_pct: float | None
+    cure_within_2d_pct: float | None
+    cure_without_antiviral_pct: float | None
+    death_after_5d_pct: float | None
+    windows: list[AntiviralWindow]
+
+
+class ImagingFinding(TypedDict):
+    """Severity of one imaging finding."""
+
+    finding: str
+    total: int
+    icu_pct: float
+    resolved: int
+    deaths: int
+    death_pct: float | None
+
+
+class ImagingGroup(TypedDict):
+    """Findings of one imaging exam."""
+
+    rows: list[ImagingFinding]
+    hidden: list[str]
+
+
+class ImagingSeverityResponse(TypedDict):
+    """ICU admission and lethality by X-ray and CT result."""
+
+    min_cases: int
+    xray: ImagingGroup
+    ct: ImagingGroup

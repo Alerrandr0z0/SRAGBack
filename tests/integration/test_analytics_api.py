@@ -68,3 +68,100 @@ class TestSymptomsSignatureEndpoint:
         resp = client.get("/analytics/symptoms_signature")
         assert resp.status_code == 200
         assert resp.json() == {"labels": [], "bands": [], "matrices": {}}
+
+
+class TestIcuAccessEndpoint:
+    def test_response_shape(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/icu_access")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert {"granularity", "limit_days", "min_cases", "summary", "periods"} <= set(body)
+        assert body["granularity"] == "year"
+        assert body["limit_days"] == 3
+
+    def test_granularity_param(self, mock_srag_df) -> None:
+        body = client.get("/analytics/icu_access", params={"granularity": "month"}).json()
+        assert body["granularity"] == "month"
+
+    def test_invalid_granularity_is_rejected(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/icu_access", params={"granularity": "semana"})
+        assert resp.status_code == 422
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        body = client.get("/analytics/icu_access").json()
+        assert body["summary"]["total"] == 0
+        assert body["periods"] == []
+
+
+class TestDiagnosticMethodsEndpoint:
+    def test_response_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/diagnostic_methods").json()
+        assert {"granularity", "min_cases", "summary", "periods"} <= set(body)
+        assert {"total", "rt_pcr", "laboratory_pct"} <= set(body["summary"])
+
+    def test_invalid_granularity_is_rejected(self, mock_srag_df) -> None:
+        params = {"granularity": "semana"}
+        assert client.get("/analytics/diagnostic_methods", params=params).status_code == 422
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        body = client.get("/analytics/diagnostic_methods").json()
+        assert body["summary"]["total"] == 0
+        assert body["periods"] == []
+
+
+class TestNosocomialRiskEndpoint:
+    def test_response_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/nosocomial_risk", params={"granularity": "quarter"}).json()
+        assert body["granularity"] == "quarter"
+        assert {"mean_pct", "alert_limit_pct", "summary", "periods"} <= set(body)
+        assert {"nosocomial", "community"} == set(body["summary"]["lethality"])
+
+    def test_invalid_granularity_is_rejected(self, mock_srag_df) -> None:
+        params = {"granularity": "dia"}
+        assert client.get("/analytics/nosocomial_risk", params=params).status_code == 422
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        body = client.get("/analytics/nosocomial_risk").json()
+        assert body["summary"]["known"] == 0
+        assert body["periods"] == []
+
+
+class TestDiagnosticLethalityEndpoint:
+    def test_response_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/diagnostic_lethality").json()
+        assert {"min_resolved", "overall", "methods", "hidden"} <= set(body)
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        body = client.get("/analytics/diagnostic_lethality").json()
+        assert body["methods"] == []
+        assert body["overall"]["cfr"] is None
+
+
+class TestLabEndpoints:
+    def test_lab_performance_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/lab_performance").json()
+        assert {"total", "result", "collection", "rt_pcr_latency", "turnaround"} <= set(body)
+        assert body["rt_pcr_latency"]["target_days"] == 7
+
+    def test_sample_positivity_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/sample_positivity").json()
+        assert {"min_tested", "overall", "types", "hidden"} <= set(body)
+
+    def test_antiviral_windows_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/antiviral_windows").json()
+        assert {"treated", "with_dates", "median_days", "windows"} <= set(body)
+
+    def test_imaging_severity_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/imaging_severity").json()
+        assert {"min_cases", "xray", "ct"} <= set(body)
+        assert {"rows", "hidden"} == set(body["xray"])
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        assert client.get("/analytics/lab_performance").json()["total"] == 0
+        assert client.get("/analytics/sample_positivity").json()["types"] == []
+        assert client.get("/analytics/antiviral_windows").json()["windows"] == []
+        assert client.get("/analytics/imaging_severity").json()["ct"]["rows"] == []
+
+    def test_filters_are_validated(self, mock_srag_df) -> None:
+        for path in ("lab_performance", "sample_positivity", "antiviral_windows"):
+            assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422

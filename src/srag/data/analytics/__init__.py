@@ -1,9 +1,18 @@
 """Core analytics and aggregation for Mossoró SRAG data (lean: 12 tópicos)."""
 
 from srag.data.analytics.advanced import (
+    ICU_GRANULARITIES,
     SIGNATURE_PROFILES,
+    compute_antiviral_windows,
     compute_clinical_flow,
     compute_comorbidities_odds_ratio,
+    compute_diagnostic_lethality,
+    compute_diagnostic_methods,
+    compute_icu_access,
+    compute_imaging_severity,
+    compute_lab_performance,
+    compute_nosocomial_risk,
+    compute_sample_positivity,
     compute_symptoms_signature,
 )
 from srag.data.analytics.clinical import (
@@ -47,6 +56,7 @@ from srag.data.analytics.territorial import (
 
 __all__ = [
     "BAIRRO_LABELS",
+    "ICU_GRANULARITIES",
     "MISSING_BAIRRO_LABEL",
     "RURAL_AGGREGATE_LABEL",
     "SIGNATURE_PROFILES",
@@ -55,17 +65,25 @@ __all__ = [
     "categorize_age",
     "classificar_status_gripe",
     "compute_age_pareto",
+    "compute_antiviral_windows",
     "compute_citizen_pyramid",
     "compute_clinical_flow",
     "compute_comorbidities_odds_ratio",
     "compute_comorbidities_pareto",
     "compute_covid_vaccination_profile",
+    "compute_diagnostic_lethality",
+    "compute_diagnostic_methods",
     "compute_flu_vaccination_donut",
+    "compute_icu_access",
+    "compute_imaging_severity",
+    "compute_lab_performance",
     "compute_maternal_profile",
+    "compute_nosocomial_risk",
     "compute_population_pyramid",
     "compute_race_profile",
     "compute_risk_factors_full_profile",
     "compute_rt_pcr_summary",
+    "compute_sample_positivity",
     "compute_schooling_profile",
     "compute_symptoms_signature",
     "compute_territory_distribution",
