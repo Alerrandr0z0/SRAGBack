@@ -207,3 +207,32 @@ class TestCitizenEndpoints:
     def test_filters_are_validated(self, mock_srag_df) -> None:
         for path in ("maternal_outcomes", "occupation_profile", "animal_contact"):
             assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422
+
+
+class TestUnitEndpoints:
+    def test_notifying_units_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/notifying_units").json()
+        assert {"total", "unidentified", "items"} <= set(body)
+
+    def test_unit_notification_delay_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/unit_notification_delay").json()
+        assert {"limit_days", "min_cases", "units", "hidden_count"} <= set(body)
+        assert body["limit_days"] == 7
+
+    def test_hospital_stay_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/hospital_stay").json()
+        assert {"closed", "median_days", "bed_days", "curve"} <= set(body)
+
+    def test_vaccine_journey_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/vaccine_journey").json()
+        assert {"min_cases", "stages"} <= set(body)
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        assert client.get("/analytics/notifying_units").json()["items"] == []
+        assert client.get("/analytics/unit_notification_delay").json()["units"] == []
+        assert client.get("/analytics/hospital_stay").json()["closed"] == 0
+        assert client.get("/analytics/vaccine_journey").json()["stages"] == []
+
+    def test_filters_are_validated(self, mock_srag_df) -> None:
+        for path in ("notifying_units", "unit_notification_delay", "hospital_stay"):
+            assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422

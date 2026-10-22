@@ -454,3 +454,86 @@ class CovidImmunizationResponse(TypedDict):
 
     manufacturers: list[LabeledCount]
     dose_stages: list[LabeledCount]
+
+
+class NotifyingUnit(TypedDict):
+    """One notifying unit with the outcome of its cases."""
+
+    id_unidade: str
+    name: str
+    total: int
+    cure: int
+    death: int
+    other: int
+
+
+class NotifyingUnitsResponse(TypedDict):
+    """Cases per notifying unit, most notifications first."""
+
+    total: int
+    unidentified: int
+    items: list[NotifyingUnit]
+
+
+class UnitDelayRow(TypedDict):
+    """Notification delay of one notifying unit."""
+
+    id_unidade: str
+    unit: str
+    total: int
+    median_days: float
+    mean_days: float
+    within_limit_pct: float
+    status: str
+
+
+class UnitNotificationDelayResponse(TypedDict):
+    """Notification delay per unit (longest median first)."""
+
+    limit_days: int
+    warn_days: int
+    critical_days: int
+    min_cases: int
+    units: list[UnitDelayRow]
+    hidden_count: int
+
+
+class StayCurvePoint(TypedDict):
+    """Share of closed cases already discharged or dead by a given day of stay."""
+
+    day: int
+    cure_pct: float
+    death_pct: float
+
+
+class HospitalStayResponse(TypedDict):
+    """Length of stay of closed cases (cure or death with valid dates)."""
+
+    closed: int
+    median_days: float | None
+    median_cure_days: float | None
+    median_death_days: float | None
+    mean_days: float | None
+    bed_days: int
+    daily_census: float | None
+    curve: list[StayCurvePoint]
+
+
+class VaccineJourneyStage(TypedDict):
+    """Hospital journey of one COVID-19 vaccination stage."""
+
+    stage: str
+    total: int
+    median_days_to_hospital: float | None
+    median_stay_days: float | None
+    icu_pct: float | None
+    cure_pct: float | None
+    death_pct: float | None
+    resolved: int
+
+
+class VaccineJourneyResponse(TypedDict):
+    """Journey per vaccination stage; stages below ``min_cases`` are anecdotal."""
+
+    min_cases: int
+    stages: list[VaccineJourneyStage]

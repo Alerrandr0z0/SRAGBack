@@ -200,16 +200,20 @@ _DOSE_ORDER = (
 )
 
 
-def compute_covid_dose_stage(df: pd.DataFrame) -> list[dict[str, Any]]:
-    """Cases by the furthest COVID-19 dose reached, from unvaccinated to booster."""
-    if df.empty:
-        return []
+def covid_stage_series(df: pd.DataFrame) -> pd.Series:
+    """Furthest COVID-19 dose reached by each case (one label per row of ``df``)."""
     stage = pd.Series("", index=df.index, dtype="object")
     for column, label in _DOSE_STAGES:
         if column in df.columns:
             stage = stage.mask((stage == "") & df[column].notna(), label)
     unvaccinated = _numeric(df, "VACINA_COV") == 2
     fallback = pd.Series(np.where(unvaccinated, "Não vacinado", "Ignorado"), index=df.index)
-    stage = pd.Series(np.where(stage == "", fallback, stage), index=df.index)
-    counts = {str(label): int(n) for label, n in stage.value_counts().items()}
+    return pd.Series(np.where(stage == "", fallback, stage), index=df.index)
+
+
+def compute_covid_dose_stage(df: pd.DataFrame) -> list[dict[str, Any]]:
+    """Cases by the furthest COVID-19 dose reached, from unvaccinated to booster."""
+    if df.empty:
+        return []
+    counts = {str(label): int(n) for label, n in covid_stage_series(df).value_counts().items()}
     return [{"label": label, "count": counts.get(label, 0)} for label in _DOSE_ORDER]
