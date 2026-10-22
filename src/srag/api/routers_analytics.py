@@ -16,15 +16,19 @@ from fastapi import APIRouter, HTTPException, Query
 from srag.api.core import apply_surveillance_filters, get_df, sanitize_data
 from srag.api.dependencies import CommonFiltersDep
 from srag.api.types import (
+    AnimalContactResponse,
     AntiviralWindowsResponse,
     ClinicalFlowResponse,
+    CovidImmunizationResponse,
     DiagnosticLethalityResponse,
     DiagnosticMethodsResponse,
     IcuAccessResponse,
     ImagingSeverityResponse,
     LabPerformanceResponse,
+    MaternalOutcomesResponse,
     NosocomialRiskResponse,
     NotificationDelayResponse,
+    OccupationProfileResponse,
     OddsRatioRow,
     SamplePositivityResponse,
     SymptomsSignatureResponse,
@@ -33,18 +37,23 @@ from srag.data.analytics import (
     ICU_GRANULARITIES,
     SIGNATURE_PROFILES,
     apply_global_filters,
+    compute_animal_contact,
     compute_antiviral_windows,
     compute_clinical_flow,
     compute_comorbidities_odds_ratio,
+    compute_covid_dose_stage,
     compute_diagnostic_lethality,
     compute_diagnostic_methods,
     compute_icu_access,
     compute_imaging_severity,
     compute_lab_performance,
+    compute_maternal_outcomes,
     compute_nosocomial_risk,
     compute_notification_delay,
+    compute_occupation_profile,
     compute_sample_positivity,
     compute_symptoms_signature,
+    compute_vaccine_manufacturers,
 )
 from srag.data.analytics.territorial import normalize_territory_labels
 
@@ -171,3 +180,35 @@ def notification_delay(filters: CommonFiltersDep) -> NotificationDelayResponse:
     """Atraso entre os primeiros sintomas e a notificação, geral e por bairro."""
     df = normalize_territory_labels(_filtered_df(filters))
     return cast("NotificationDelayResponse", sanitize_data(compute_notification_delay(df)))
+
+
+@router.get("/maternal_outcomes")
+def maternal_outcomes(filters: CommonFiltersDep) -> MaternalOutcomesResponse:
+    """Desfecho (cura, UTI sobrevivente, óbito) por grupo gestacional."""
+    result = compute_maternal_outcomes(_filtered_df(filters))
+    return cast("MaternalOutcomesResponse", sanitize_data(result))
+
+
+@router.get("/occupation_profile")
+def occupation_profile(filters: CommonFiltersDep) -> OccupationProfileResponse:
+    """Ocupações (CBO) mais frequentes entre os casos notificados."""
+    result = compute_occupation_profile(_filtered_df(filters))
+    return cast("OccupationProfileResponse", sanitize_data(result))
+
+
+@router.get("/animal_contact")
+def animal_contact(filters: CommonFiltersDep) -> AnimalContactResponse:
+    """Contato com aves, suínos ou outros animais."""
+    result = compute_animal_contact(_filtered_df(filters))
+    return cast("AnimalContactResponse", sanitize_data(result))
+
+
+@router.get("/covid_immunization")
+def covid_immunization(filters: CommonFiltersDep) -> CovidImmunizationResponse:
+    """Fabricante da última dose e etapa vacinal mais avançada contra COVID-19."""
+    df = _filtered_df(filters)
+    result = {
+        "manufacturers": compute_vaccine_manufacturers(df),
+        "dose_stages": compute_covid_dose_stage(df),
+    }
+    return cast("CovidImmunizationResponse", sanitize_data(result))

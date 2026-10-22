@@ -180,3 +180,30 @@ class TestNotificationDelayEndpoint:
 
     def test_filters_are_validated(self, mock_srag_df) -> None:
         assert client.get("/analytics/notification_delay", params={"base": "x"}).status_code == 422
+
+
+class TestCitizenEndpoints:
+    def test_maternal_outcomes_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/maternal_outcomes").json()
+        assert {"gestantes_total", "puerperas_total", "min_cases", "groups"} <= set(body)
+
+    def test_occupation_profile_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/occupation_profile").json()
+        assert {"total", "informed", "items"} <= set(body)
+
+    def test_animal_contact_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/animal_contact").json()
+        assert {"total", "ignored", "items"} <= set(body)
+
+    def test_covid_immunization_shape(self, mock_srag_df) -> None:
+        body = client.get("/analytics/covid_immunization").json()
+        assert {"manufacturers", "dose_stages"} <= set(body)
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        assert client.get("/analytics/maternal_outcomes").json()["groups"] == []
+        assert client.get("/analytics/occupation_profile").json()["items"] == []
+        assert client.get("/analytics/covid_immunization").json()["manufacturers"] == []
+
+    def test_filters_are_validated(self, mock_srag_df) -> None:
+        for path in ("maternal_outcomes", "occupation_profile", "animal_contact"):
+            assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422
