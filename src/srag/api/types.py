@@ -404,3 +404,53 @@ class NotificationDelayResponse(TypedDict):
     overall: NotificationDelayOverall
     bairros: list[NotificationDelayBairro]
     hidden_count: int
+
+
+class MaternalGroup(TypedDict):
+    """Outcome counts of one gestational group."""
+
+    group: str
+    total: int
+    cure: int
+    icu: int
+    death: int
+    other: int
+
+
+class MaternalOutcomesResponse(TypedDict):
+    """Outcome per gestational group (Gest. 1º/2º/3º tri, IG ignorada, Puérpera)."""
+
+    gestantes_total: int
+    puerperas_total: int
+    min_cases: int
+    groups: list[MaternalGroup]
+
+
+class LabeledCount(TypedDict):
+    """A category and its number of cases."""
+
+    label: str
+    count: int
+
+
+class OccupationProfileResponse(TypedDict):
+    """Most frequent occupations; ``informed`` excludes blank/ignored CBO."""
+
+    total: int
+    informed: int
+    items: list[LabeledCount]
+
+
+class AnimalContactResponse(TypedDict):
+    """Contact with animals; ``ignored`` counts unfilled/ignored answers."""
+
+    total: int
+    ignored: int
+    items: list[LabeledCount]
+
+
+class CovidImmunizationResponse(TypedDict):
+    """Last manufacturer and furthest dose reached for COVID-19."""
+
+    manufacturers: list[LabeledCount]
+    dose_stages: list[LabeledCount]
