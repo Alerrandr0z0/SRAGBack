@@ -22,16 +22,20 @@ from srag.api.types import (
     CovidImmunizationResponse,
     DiagnosticLethalityResponse,
     DiagnosticMethodsResponse,
+    HospitalStayResponse,
     IcuAccessResponse,
     ImagingSeverityResponse,
     LabPerformanceResponse,
     MaternalOutcomesResponse,
     NosocomialRiskResponse,
     NotificationDelayResponse,
+    NotifyingUnitsResponse,
     OccupationProfileResponse,
     OddsRatioRow,
     SamplePositivityResponse,
     SymptomsSignatureResponse,
+    UnitNotificationDelayResponse,
+    VaccineJourneyResponse,
 )
 from srag.data.analytics import (
     ICU_GRANULARITIES,
@@ -44,15 +48,19 @@ from srag.data.analytics import (
     compute_covid_dose_stage,
     compute_diagnostic_lethality,
     compute_diagnostic_methods,
+    compute_hospital_stay,
     compute_icu_access,
     compute_imaging_severity,
     compute_lab_performance,
     compute_maternal_outcomes,
     compute_nosocomial_risk,
     compute_notification_delay,
+    compute_notifying_units,
     compute_occupation_profile,
     compute_sample_positivity,
     compute_symptoms_signature,
+    compute_unit_notification_delay,
+    compute_vaccine_journey,
     compute_vaccine_manufacturers,
 )
 from srag.data.analytics.territorial import normalize_territory_labels
@@ -212,3 +220,31 @@ def covid_immunization(filters: CommonFiltersDep) -> CovidImmunizationResponse:
         "dose_stages": compute_covid_dose_stage(df),
     }
     return cast("CovidImmunizationResponse", sanitize_data(result))
+
+
+@router.get("/notifying_units")
+def notifying_units(filters: CommonFiltersDep) -> NotifyingUnitsResponse:
+    """Unidades notificadoras com o desfecho dos seus casos."""
+    result = compute_notifying_units(_filtered_df(filters))
+    return cast("NotifyingUnitsResponse", sanitize_data(result))
+
+
+@router.get("/unit_notification_delay")
+def unit_notification_delay(filters: CommonFiltersDep) -> UnitNotificationDelayResponse:
+    """Atraso entre os primeiros sintomas e a notificação, por unidade."""
+    result = compute_unit_notification_delay(_filtered_df(filters))
+    return cast("UnitNotificationDelayResponse", sanitize_data(result))
+
+
+@router.get("/hospital_stay")
+def hospital_stay(filters: CommonFiltersDep) -> HospitalStayResponse:
+    """Tempo de internação dos casos encerrados em cura ou óbito."""
+    result = compute_hospital_stay(_filtered_df(filters))
+    return cast("HospitalStayResponse", sanitize_data(result))
+
+
+@router.get("/vaccine_journey")
+def vaccine_journey(filters: CommonFiltersDep) -> VaccineJourneyResponse:
+    """Jornada hospitalar por etapa da vacinação contra COVID-19."""
+    result = compute_vaccine_journey(_filtered_df(filters))
+    return cast("VaccineJourneyResponse", sanitize_data(result))

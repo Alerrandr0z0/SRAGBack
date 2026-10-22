@@ -61,6 +61,12 @@ from srag.data.analytics.territorial import (
     compute_zone_distribution,
     normalize_territory_labels,
 )
+from srag.data.analytics.units import (
+    compute_hospital_stay,
+    compute_notifying_units,
+    compute_unit_notification_delay,
+    compute_vaccine_journey,
+)
 
 __all__ = [
     "BAIRRO_LABELS",
@@ -84,6 +90,7 @@ __all__ = [
     "compute_diagnostic_lethality",
     "compute_diagnostic_methods",
     "compute_flu_vaccination_donut",
+    "compute_hospital_stay",
     "compute_icu_access",
     "compute_imaging_severity",
     "compute_lab_performance",
@@ -91,6 +98,7 @@ __all__ = [
     "compute_maternal_profile",
     "compute_nosocomial_risk",
     "compute_notification_delay",
+    "compute_notifying_units",
     "compute_occupation_profile",
     "compute_population_pyramid",
     "compute_race_profile",
@@ -101,6 +109,8 @@ __all__ = [
     "compute_symptoms_signature",
     "compute_territory_distribution",
     "compute_time_series",
+    "compute_unit_notification_delay",
+    "compute_vaccine_journey",
     "compute_vaccine_manufacturers",
     "compute_virus_distribution",
     "compute_zone_distribution",
