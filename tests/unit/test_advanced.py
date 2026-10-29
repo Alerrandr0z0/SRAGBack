@@ -17,6 +17,7 @@ from srag.data.analytics.advanced import (
     compute_imaging_severity,
     compute_lab_performance,
     compute_nosocomial_risk,
+    compute_notification_delay,
     compute_sample_positivity,
     compute_symptoms_signature,
 )
@@ -693,3 +694,76 @@ class TestImagingSeverity:
         result = compute_imaging_severity(pd.DataFrame())
         assert result["xray"]["rows"] == []
         assert result["ct"]["rows"] == []
+
+
+class TestNotificationDelay:
+    def _cases(self, bairro: str, delays: list[int]) -> pd.DataFrame:
+        onset = pd.to_datetime(["2024-03-01"] * len(delays))
+        return pd.DataFrame(
+            {
+                "BAIRRO_REF": bairro,
+                "DT_SIN_PRI": onset,
+                "DT_NOTIFIC": onset + pd.to_timedelta(delays, unit="D"),
+            }
+        )
+
+    def _dataset(self) -> pd.DataFrame:
+        return pd.concat(
+            [
+                self._cases("ALTO", [2, 3, 4, 4, 5, 6, -1, 61, 61]),  # 6 valid cases
+                self._cases("MEIO", [8, 9, 10, 11, 12]),
+                self._cases("BAIXO", [12, 12, 13, 14, 15]),
+                self._cases("POUCOS", [3, 3, 3, 3]),  # below the minimum of 5 cases
+                self._cases("NAO INFORMADO", [1] * 6),  # not a place
+            ],
+            ignore_index=True,
+        )
+
+    def test_ranks_bairros_from_the_longest_median_delay(self) -> None:
+        result = compute_notification_delay(self._dataset())
+        assert [row["bairro"] for row in result["bairros"]] == ["BAIXO", "MEIO", "ALTO"]
+
+    def test_row_statistics_and_status(self) -> None:
+        rows = {
+            row["bairro"]: row for row in compute_notification_delay(self._dataset())["bairros"]
+        }
+        assert (rows["ALTO"]["total"], rows["ALTO"]["median_days"]) == (6, 4.0)
+        assert rows["ALTO"]["within_limit_pct"] == 100.0
+        assert rows["ALTO"]["status"] == "adequado"  # median <= 5
+        assert rows["MEIO"]["median_days"] == 10.0
+        assert rows["MEIO"]["status"] == "atencao"  # median <= 10
+        assert rows["MEIO"]["within_limit_pct"] == 0.0
+        assert (rows["BAIXO"]["median_days"], rows["BAIXO"]["mean_days"]) == (13.0, 13.2)
+        assert rows["BAIXO"]["status"] == "critico"
+
+    def test_small_bairros_are_counted_but_not_ranked(self) -> None:
+        result = compute_notification_delay(self._dataset())
+        assert result["hidden_count"] == 1
+        assert "POUCOS" not in [row["bairro"] for row in result["bairros"]]
+
+    def test_unknown_bairro_is_never_ranked_but_counts_in_the_overall(self) -> None:
+        result = compute_notification_delay(self._dataset())
+        assert "NAO INFORMADO" not in [row["bairro"] for row in result["bairros"]]
+        # 26 valid delays (negative and >60 excluded); 16 of them within 7 days
+        assert result["overall"]["total"] == 26
+        assert result["overall"]["median_days"] == 4.0
+        assert result["overall"]["within_limit_pct"] == 61.5
+        assert result["overall"]["status"] == "adequado"
+
+    def test_thresholds_are_exposed(self) -> None:
+        result = compute_notification_delay(self._dataset())
+        assert (result["limit_days"], result["warn_days"], result["critical_days"]) == (7, 5, 10)
+        assert result["min_cases"] == 5
+
+    def test_empty_and_missing_columns(self) -> None:
+        for frame in (pd.DataFrame(), pd.DataFrame({"BAIRRO_REF": ["A"]})):
+            result = compute_notification_delay(frame)
+            assert result["bairros"] == []
+            assert result["overall"]["median_days"] is None
+            assert result["overall"]["status"] is None
+
+    def test_without_bairro_column_only_the_overall_exists(self) -> None:
+        df = self._dataset().drop(columns=["BAIRRO_REF"])
+        result = compute_notification_delay(df)
+        assert result["bairros"] == []
+        assert result["overall"]["total"] == 26

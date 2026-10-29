@@ -393,3 +393,166 @@ class LethalityAgeAgentResponse(TypedDict):
     age_bands: list[str]
     agents: list[str]
     matrix: list[list[float | None]]
+class NotificationDelayOverall(TypedDict):
+    """Delay between first symptoms and notification over every valid case."""
+
+    total: int
+    median_days: float | None
+    within_limit_pct: float | None
+    status: str | None
+
+
+class NotificationDelayBairro(TypedDict):
+    """Notification delay of one bairro."""
+
+    bairro: str
+    total: int
+    median_days: float
+    mean_days: float
+    within_limit_pct: float
+    status: str
+
+
+class NotificationDelayResponse(TypedDict):
+    """Notification delay overall and per bairro (longest median first)."""
+
+    limit_days: int
+    warn_days: int
+    critical_days: int
+    min_cases: int
+    overall: NotificationDelayOverall
+    bairros: list[NotificationDelayBairro]
+    hidden_count: int
+
+
+class MaternalGroup(TypedDict):
+    """Outcome counts of one gestational group."""
+
+    group: str
+    total: int
+    cure: int
+    icu: int
+    death: int
+    other: int
+
+
+class MaternalOutcomesResponse(TypedDict):
+    """Outcome per gestational group (Gest. 1º/2º/3º tri, IG ignorada, Puérpera)."""
+
+    gestantes_total: int
+    puerperas_total: int
+    min_cases: int
+    groups: list[MaternalGroup]
+
+
+class LabeledCount(TypedDict):
+    """A category and its number of cases."""
+
+    label: str
+    count: int
+
+
+class OccupationProfileResponse(TypedDict):
+    """Most frequent occupations; ``informed`` excludes blank/ignored CBO."""
+
+    total: int
+    informed: int
+    items: list[LabeledCount]
+
+
+class AnimalContactResponse(TypedDict):
+    """Contact with animals; ``ignored`` counts unfilled/ignored answers."""
+
+    total: int
+    ignored: int
+    items: list[LabeledCount]
+
+
+class CovidImmunizationResponse(TypedDict):
+    """Last manufacturer and furthest dose reached for COVID-19."""
+
+    manufacturers: list[LabeledCount]
+    dose_stages: list[LabeledCount]
+
+
+class NotifyingUnit(TypedDict):
+    """One notifying unit with the outcome of its cases."""
+
+    id_unidade: str
+    name: str
+    total: int
+    cure: int
+    death: int
+    other: int
+
+
+class NotifyingUnitsResponse(TypedDict):
+    """Cases per notifying unit, most notifications first."""
+
+    total: int
+    unidentified: int
+    items: list[NotifyingUnit]
+
+
+class UnitDelayRow(TypedDict):
+    """Notification delay of one notifying unit."""
+
+    id_unidade: str
+    unit: str
+    total: int
+    median_days: float
+    mean_days: float
+    within_limit_pct: float
+    status: str
+
+
+class UnitNotificationDelayResponse(TypedDict):
+    """Notification delay per unit (longest median first)."""
+
+    limit_days: int
+    warn_days: int
+    critical_days: int
+    min_cases: int
+    units: list[UnitDelayRow]
+    hidden_count: int
+
+
+class StayCurvePoint(TypedDict):
+    """Share of closed cases already discharged or dead by a given day of stay."""
+
+    day: int
+    cure_pct: float
+    death_pct: float
+
+
+class HospitalStayResponse(TypedDict):
+    """Length of stay of closed cases (cure or death with valid dates)."""
+
+    closed: int
+    median_days: float | None
+    median_cure_days: float | None
+    median_death_days: float | None
+    mean_days: float | None
+    bed_days: int
+    daily_census: float | None
+    curve: list[StayCurvePoint]
+
+
+class VaccineJourneyStage(TypedDict):
+    """Hospital journey of one COVID-19 vaccination stage."""
+
+    stage: str
+    total: int
+    median_days_to_hospital: float | None
+    median_stay_days: float | None
+    icu_pct: float | None
+    cure_pct: float | None
+    death_pct: float | None
+    resolved: int
+
+
+class VaccineJourneyResponse(TypedDict):
+    """Journey per vaccination stage; stages below ``min_cases`` are anecdotal."""
+
+    min_cases: int
+    stages: list[VaccineJourneyStage]
