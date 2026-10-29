@@ -372,3 +372,24 @@ class ImagingSeverityResponse(TypedDict):
     min_cases: int
     xray: ImagingGroup
     ct: ImagingGroup
+
+
+class SeverityByAgePoint(TypedDict):
+    """Severity of one age band (rates are % of the band's cases)."""
+
+    age_group: str
+    total_cases: int
+    death_rate: float
+    uti_rate: float
+    support_rate: float
+    icu_survivor_rate: float
+    ward_rate: float
+
+
+class LethalityAgeAgentResponse(TypedDict):
+    """Lethality (CFR %) per etiologic agent (rows) and age band (columns)."""
+
+    min_resolved: int
+    age_bands: list[str]
+    agents: list[str]
+    matrix: list[list[float | None]]

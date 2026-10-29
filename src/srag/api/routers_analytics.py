@@ -27,6 +27,8 @@ from srag.api.types import (
     OddsRatioRow,
     SamplePositivityResponse,
     SymptomsSignatureResponse,
+    LethalityAgeAgentResponse,
+    SeverityByAgePoint,
 )
 from srag.data.analytics import (
     ICU_GRANULARITIES,
@@ -43,6 +45,8 @@ from srag.data.analytics import (
     compute_nosocomial_risk,
     compute_sample_positivity,
     compute_symptoms_signature,
+    compute_lethality_age_agent,
+    compute_severity_by_age,
 )
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
@@ -161,3 +165,16 @@ def imaging_severity(filters: CommonFiltersDep) -> ImagingSeverityResponse:
     """UTI e letalidade por resultado de Raio-X e de tomografia."""
     result = compute_imaging_severity(_filtered_df(filters))
     return cast("ImagingSeverityResponse", sanitize_data(result))
+
+@router.get("/severity_by_age")
+def severity_by_age(filters: CommonFiltersDep) -> list[SeverityByAgePoint]:
+    """Gravidade por faixa etária: óbito, UTI (sobrevivente), enfermaria e suporte ventilatório."""
+    rows = compute_severity_by_age(_filtered_df(filters))
+    return cast("list[SeverityByAgePoint]", sanitize_data(rows))
+
+
+@router.get("/lethality_age_agent")
+def lethality_age_agent(filters: CommonFiltersDep) -> LethalityAgeAgentResponse:
+    """Letalidade (CFR) de cada agente etiológico em cada faixa etária."""
+    result = compute_lethality_age_agent(_filtered_df(filters))
+    return cast("LethalityAgeAgentResponse", sanitize_data(result))
