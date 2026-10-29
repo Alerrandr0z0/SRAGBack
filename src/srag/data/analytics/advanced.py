@@ -1095,6 +1095,7 @@ def compute_lethality_age_agent(df: pd.DataFrame) -> dict[str, Any]:
         "age_bands": bands,
         "agents": agents,
         "matrix": matrix,
+    }
 
 # ---------------------------------------------------------------------------
 # Território: atraso de notificação por bairro
