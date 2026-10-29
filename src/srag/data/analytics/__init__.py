@@ -15,6 +15,8 @@ from srag.data.analytics.advanced import (
     compute_notification_delay,
     compute_sample_positivity,
     compute_symptoms_signature,
+    compute_lethality_age_agent,
+    compute_severity_by_age,
 )
 from srag.data.analytics.citizen import (
     compute_animal_contact,
@@ -120,4 +122,6 @@ __all__ = [
     "normalize_influenza_values",
     "normalize_territory_labels",
     "outcome_death_mask",
+    "compute_lethality_age_agent",
+    "compute_severity_by_age",
 ]

@@ -15,6 +15,7 @@ import pandas as pd
 
 from srag.data.analytics.filters import age_years, outcome_death_mask
 from srag.data.analytics.surveillance import infer_etiologic_agent
+from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES, VENTILACAO_CODES
 from srag.data.loader import MISSING_BAIRRO_LABEL
 from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES
 
@@ -974,6 +975,126 @@ def compute_imaging_severity(df: pd.DataFrame) -> dict[str, Any]:
         "ct": _imaging_findings(df, "TOMO_RES", _CT_FINDINGS),
     }
 
+# ---------------------------------------------------------------------------
+# Gravidade e letalidade por faixa etária
+# ---------------------------------------------------------------------------
+
+_SEVERITY_AGENTS = (
+    "COVID-19",
+    "Influenza",
+    "VSR",
+    "Outros Vírus",
+    "Outro Agente",
+    "Não Especificada",
+)
+_MIN_RESOLVED_AGE_AGENT = 1  # 1 = mostra toda célula com ao menos um caso com desfecho
+
+# Faixas do gráfico: "0 anos" são os menores de 1 ano (idade em dias/meses entra aqui).
+_AGE_BANDS = [
+    "0 anos",
+    "1-4 anos",
+    "5-9 anos",
+    "10-14 anos",
+    "15-19 anos",
+    "20-29 anos",
+    "30-39 anos",
+    "40-49 anos",
+    "50-59 anos",
+    "60-69 anos",
+    "70-79 anos",
+    "80+ anos",
+]
+_AGE_EDGES = [0, 1, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, float("inf")]
+
+def _age_band_column(df: pd.DataFrame) -> pd.Series:
+    """Age band of each case; missing age stays empty and is left out of the chart."""
+    bands = pd.cut(age_years(df), bins=_AGE_EDGES, labels=_AGE_BANDS, right=False)
+    return pd.Series(bands.astype(object), index=df.index)
+
+
+def _severity_frame(df: pd.DataFrame) -> pd.DataFrame:
+    """One boolean flag per severity marker, plus age band and etiologic agent."""
+    evolucao = _numeric_column(df, "EVOLUCAO")
+    return pd.DataFrame(
+        {
+            "band": _age_band_column(df),
+            "agent": infer_etiologic_agent(df),
+            "death": outcome_death_mask(evolucao),
+            "icu": _numeric_column(df, "UTI") == 1,
+            "support": _numeric_column(df, "SUPORT_VEN").isin(VENTILACAO_CODES),
+            "resolved": evolucao.isin({1, 2}), 
+        },
+        index=df.index,
+    )
+
+
+def compute_severity_by_age(df: pd.DataFrame) -> list[dict[str, Any]]:
+    """Severity of every age band: share of deaths, ICU admissions and ventilatory support.
+
+    All rates are percentages of the band's cases. ``death_rate``, ``icu_survivor_rate``
+    and ``ward_rate`` are mutually exclusive and add up to 100% (they are the three
+    slices of the stacked bar); ``uti_rate`` counts everyone who went through the ICU,
+    including those who died there. Bands without cases are kept, with zeros.
+    """
+    if df.empty:
+        return []
+
+    frame = _severity_frame(df)
+    rows: list[dict[str, Any]] = []
+    for band in _AGE_BANDS:
+        group = frame[frame["band"] == band]
+        total = len(group)
+        death, icu = group["death"], group["icu"]
+        rows.append(
+            {
+                "age_group": band,
+                "total_cases": total,
+                "death_rate": _pct(int(death.sum()), total),
+                "uti_rate": _pct(int(icu.sum()), total),
+                "support_rate": _pct(int(group["support"].sum()), total),
+                "icu_survivor_rate": _pct(int((icu & ~death).sum()), total),
+                "ward_rate": _pct(int((~icu & ~death).sum()), total),
+            }
+        )
+    return rows
+
+
+def compute_lethality_age_agent(df: pd.DataFrame) -> dict[str, Any]:
+    """Lethality (CFR %) of each etiologic agent in each age band.
+
+    CFR = deaths / cases with a known outcome (EVOLUCAO in VALID_OUTCOMES). A cell with
+    fewer than ``min_resolved`` resolved cases is ``None`` (1 death in 1 case is not 100%).
+    ``matrix[i][j]`` is the agent ``agents[i]`` in the band ``age_bands[j]``; agents with
+    no resolved case are left out.
+    """
+    bands = list(_AGE_BANDS)
+    if df.empty:
+        return {
+            "min_resolved": _MIN_RESOLVED_AGE_AGENT,
+            "age_bands": bands,
+            "agents": [],
+            "matrix": [],
+        }
+
+    frame = _severity_frame(df)
+    resolved = frame[frame["resolved"]]
+    agents = [agent for agent in _SEVERITY_AGENTS if (resolved["agent"] == agent).any()]
+
+    matrix: list[list[float | None]] = []
+    for agent in agents:
+        of_agent = resolved[resolved["agent"] == agent]
+        row: list[float | None] = []
+        for band in bands:
+            cell = of_agent[of_agent["band"] == band]
+            enough = len(cell) >= _MIN_RESOLVED_AGE_AGENT
+            row.append(_pct(int(cell["death"].sum()), len(cell)) if enough else 0.0)
+        matrix.append(row)
+
+    return {
+        "min_resolved": _MIN_RESOLVED_AGE_AGENT,
+        "age_bands": bands,
+        "agents": agents,
+        "matrix": matrix,
 
 # ---------------------------------------------------------------------------
 # Território: atraso de notificação por bairro
