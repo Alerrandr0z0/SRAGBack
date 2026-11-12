@@ -69,47 +69,92 @@ class ComorbiditiesParetoItem(TypedDict):
 ComorbiditiesParetoResponse = list[ComorbiditiesParetoItem]
 
 
-class ClinicalFlowNode(TypedDict):
-    """Sankey node."""
+class SeverityStep(TypedDict):
+    """One step of the severity cascade: how many cases reach it and how lethal it is."""
 
-    name: str
-
-
-class ClinicalFlowLink(TypedDict):
-    """Sankey link between two stages of the patient journey."""
-
-    source: str
-    target: str
-    value: int
+    key: str
+    label: str
     pct: float
-
-
-class ClinicalFlowResponse(TypedDict):
-    """Patient journey: origin -> ICU/ward -> ventilatory support -> outcome."""
-
-    nodes: list[ClinicalFlowNode]
-    links: list[ClinicalFlowLink]
-
-
-class OddsRatioRow(TypedDict):
-    """Risk factor with frequency, lethality and Odds Ratio (95% CI)."""
-
-    name: str
-    value: int
+    cases: int
+    resolved: int
     deaths: int
-    lethality: float
-    prevalence: float
-    odds_ratio: float
-    ci_lower: float
-    ci_upper: float
+    lethality: float | None
+    reliable: bool
 
 
-class SymptomsSignatureResponse(TypedDict):
-    """Symptom prevalence per age band; each cell is [prevalence %, case count]."""
+class SeverityCascadeResponse(TypedDict):
+    """Cases reaching each severity step (hospitalised, ICU, invasive ventilation)."""
 
-    labels: list[str]
-    bands: list[str]
-    matrices: dict[str, list[list[list[float]]]]
+    total: int
+    steps: list[SeverityStep]
+
+
+class WarningSign(TypedDict):
+    """Lethality of cases with a respiratory warning sign versus cases without it."""
+
+    key: str
+    label: str
+    cases: int
+    resolved: int
+    deaths: int
+    lethality: float | None
+    reliable: bool
+    lethality_without: float | None
+    reliable_without: bool
+
+
+class WarningSignsResponse(TypedDict):
+    """Warning signs ordered by lethality, plus the overall lethality for reference."""
+
+    baseline: float | None
+    signs: list[WarningSign]
+
+
+class RiskFactorBucket(TypedDict):
+    """Cases with a given number of risk factors."""
+
+    key: str
+    label: str
+    pct: float
+    cases: int
+    resolved: int
+    deaths: int
+    lethality: float | None
+    reliable: bool
+
+
+class RiskFactorLoadResponse(TypedDict):
+    """Lethality by number of risk factors, with the factors that were counted."""
+
+    baseline: float | None
+    factors: list[str]
+    buckets: list[RiskFactorBucket]
+
+
+class DistinctiveSymptom(TypedDict):
+    """Symptom where an agent stands furthest above the other agents."""
+
+    symptom: str
+    pct: float
+    gap: float
+
+
+class SymptomAgent(TypedDict):
+    """Symptom prevalence (same order as ``symptoms``) for one etiologic agent."""
+
+    key: str
+    label: str
+    cases: int
+    count: list[int]
+    pct: list[float]
+    distinctive: DistinctiveSymptom | None
+
+
+class SymptomsByAgentResponse(TypedDict):
+    """Symptoms ordered by prevalence, with one entry per agent."""
+
+    symptoms: list[str]
+    agents: list[SymptomAgent]
 
 
 class IcuAccessStats(TypedDict):
@@ -393,6 +438,8 @@ class LethalityAgeAgentResponse(TypedDict):
     age_bands: list[str]
     agents: list[str]
     matrix: list[list[float | None]]
+
+
 class NotificationDelayOverall(TypedDict):
     """Delay between first symptoms and notification over every valid case."""
 

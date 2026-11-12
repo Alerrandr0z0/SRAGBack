@@ -18,7 +18,6 @@ from srag.api.dependencies import CommonFiltersDep
 from srag.api.types import (
     AnimalContactResponse,
     AntiviralWindowsResponse,
-    ClinicalFlowResponse,
     CovidImmunizationResponse,
     DiagnosticLethalityResponse,
     DiagnosticMethodsResponse,
@@ -26,18 +25,20 @@ from srag.api.types import (
     IcuAccessResponse,
     ImagingSeverityResponse,
     LabPerformanceResponse,
+    LethalityAgeAgentResponse,
     MaternalOutcomesResponse,
     NosocomialRiskResponse,
     NotificationDelayResponse,
     NotifyingUnitsResponse,
     OccupationProfileResponse,
-    OddsRatioRow,
+    RiskFactorLoadResponse,
     SamplePositivityResponse,
-    SymptomsSignatureResponse,
-    LethalityAgeAgentResponse,
     SeverityByAgePoint,
+    SeverityCascadeResponse,
+    SymptomsByAgentResponse,
     UnitNotificationDelayResponse,
     VaccineJourneyResponse,
+    WarningSignsResponse,
 )
 from srag.data.analytics import (
     ICU_GRANULARITIES,
@@ -45,8 +46,6 @@ from srag.data.analytics import (
     apply_global_filters,
     compute_animal_contact,
     compute_antiviral_windows,
-    compute_clinical_flow,
-    compute_comorbidities_odds_ratio,
     compute_covid_dose_stage,
     compute_diagnostic_lethality,
     compute_diagnostic_methods,
@@ -54,18 +53,21 @@ from srag.data.analytics import (
     compute_icu_access,
     compute_imaging_severity,
     compute_lab_performance,
+    compute_lethality_age_agent,
     compute_maternal_outcomes,
     compute_nosocomial_risk,
     compute_notification_delay,
     compute_notifying_units,
     compute_occupation_profile,
+    compute_risk_factor_load,
     compute_sample_positivity,
-    compute_symptoms_signature,
-    compute_lethality_age_agent,
     compute_severity_by_age,
+    compute_severity_cascade,
+    compute_symptoms_by_agent,
     compute_unit_notification_delay,
     compute_vaccine_journey,
     compute_vaccine_manufacturers,
+    compute_warning_signs,
 )
 from srag.data.analytics.territorial import normalize_territory_labels
 
@@ -89,34 +91,40 @@ def _filtered_df(filters: CommonFiltersDep) -> pd.DataFrame:
     return apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
 
 
-@router.get("/clinical_flow")
-def clinical_flow(filters: CommonFiltersDep) -> ClinicalFlowResponse:
-    """Sankey: origem, UTI ou enfermaria, suporte ventilatório e desfecho."""
-    return cast(
-        "ClinicalFlowResponse", sanitize_data(compute_clinical_flow(_filtered_df(filters)))
-    )
+@router.get("/severity_cascade")
+def severity_cascade(filters: CommonFiltersDep) -> SeverityCascadeResponse:
+    """Casos que internam, vão à UTI e usam ventilação invasiva, com a letalidade de cada etapa."""
+    result = compute_severity_cascade(_filtered_df(filters))
+    return cast("SeverityCascadeResponse", sanitize_data(result))
 
 
-@router.get("/comorbidities_odds_ratio")
-def comorbidities_odds_ratio(filters: CommonFiltersDep) -> list[OddsRatioRow]:
-    """Frequência, letalidade e Odds Ratio (IC 95%) de cada fator de risco."""
-    rows = compute_comorbidities_odds_ratio(_filtered_df(filters))
-    return cast("list[OddsRatioRow]", sanitize_data(rows))
+@router.get("/warning_signs")
+def warning_signs(filters: CommonFiltersDep) -> WarningSignsResponse:
+    """Letalidade com e sem cada sinal de alerta respiratório."""
+    result = compute_warning_signs(_filtered_df(filters))
+    return cast("WarningSignsResponse", sanitize_data(result))
 
 
-@router.get("/symptoms_signature")
-def symptoms_signature(
+@router.get("/risk_factor_load")
+def risk_factor_load(filters: CommonFiltersDep) -> RiskFactorLoadResponse:
+    """Casos e letalidade por número de fatores de risco (nenhum, 1, 2, 3 ou mais)."""
+    result = compute_risk_factor_load(_filtered_df(filters))
+    return cast("RiskFactorLoadResponse", sanitize_data(result))
+
+
+@router.get("/symptoms_by_agent")
+def symptoms_by_agent(
     filters: CommonFiltersDep,
     profile: Annotated[str, Query()] = "all",
-) -> SymptomsSignatureResponse:
-    """Prevalência de sintomas por faixa etária: COVID-19, Influenza e VSR."""
+) -> SymptomsByAgentResponse:
+    """Prevalência de cada sintoma em COVID-19, Influenza e VSR e o que diferencia cada agente."""
     if profile not in SIGNATURE_PROFILES:
         raise HTTPException(
             status_code=422,
             detail=f"profile '{profile}' invalid, expected one of {list(SIGNATURE_PROFILES)}",
         )
-    result = compute_symptoms_signature(_filtered_df(filters), profile)
-    return cast("SymptomsSignatureResponse", sanitize_data(result))
+    result = compute_symptoms_by_agent(_filtered_df(filters), profile)
+    return cast("SymptomsByAgentResponse", sanitize_data(result))
 
 
 @router.get("/icu_access")
@@ -186,6 +194,7 @@ def imaging_severity(filters: CommonFiltersDep) -> ImagingSeverityResponse:
     result = compute_imaging_severity(_filtered_df(filters))
     return cast("ImagingSeverityResponse", sanitize_data(result))
 
+
 @router.get("/severity_by_age")
 def severity_by_age(filters: CommonFiltersDep) -> list[SeverityByAgePoint]:
     """Gravidade por faixa etária: óbito, UTI (sobrevivente), enfermaria e suporte ventilatório."""
@@ -198,6 +207,7 @@ def lethality_age_agent(filters: CommonFiltersDep) -> LethalityAgeAgentResponse:
     """Letalidade (CFR) de cada agente etiológico em cada faixa etária."""
     result = compute_lethality_age_agent(_filtered_df(filters))
     return cast("LethalityAgeAgentResponse", sanitize_data(result))
+
 
 @router.get("/notification_delay")
 def notification_delay(filters: CommonFiltersDep) -> NotificationDelayResponse:

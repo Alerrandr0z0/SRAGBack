@@ -9,65 +9,85 @@ from srag.api.main import app
 client = TestClient(app)
 
 
-class TestClinicalFlowEndpoint:
-    def test_returns_nodes_and_links(self, mock_srag_df) -> None:
-        resp = client.get("/analytics/clinical_flow")
+class TestSeverityCascadeEndpoint:
+    def test_returns_the_four_steps(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/severity_cascade")
         assert resp.status_code == 200
         body = resp.json()
-        assert body["nodes"] and body["links"]
-        assert {"source", "target", "value", "pct"} <= set(body["links"][0])
+        assert [step["key"] for step in body["steps"]] == [
+            "notified",
+            "hospitalized",
+            "icu",
+            "invasive_ventilation",
+        ]
+        assert body["steps"][0]["pct"] == 100.0
+        assert {"cases", "deaths", "lethality", "reliable"} <= set(body["steps"][0])
 
     def test_api_prefix_is_also_registered(self, mock_srag_df) -> None:
-        assert client.get("/api/analytics/clinical_flow").status_code == 200
+        assert client.get("/api/analytics/severity_cascade").status_code == 200
 
     def test_empty_data(self, empty_srag_df) -> None:
-        resp = client.get("/analytics/clinical_flow")
+        resp = client.get("/analytics/severity_cascade")
         assert resp.status_code == 200
-        assert resp.json() == {"nodes": [], "links": []}
+        assert resp.json() == {"total": 0, "steps": []}
 
-    def test_base_filter_narrows_the_flow_to_deaths(self, mock_srag_df) -> None:
-        body = client.get("/analytics/clinical_flow", params={"base": "obitos"}).json()
-        final_nodes = {link["target"] for link in body["links"]} & {"Cura", "Óbito", "Em Aberto"}
-        assert final_nodes == {"Óbito"}
+    def test_base_filter_narrows_the_cascade(self, mock_srag_df) -> None:
+        everyone = client.get("/analytics/severity_cascade").json()["total"]
+        deaths = client.get("/analytics/severity_cascade", params={"base": "obitos"}).json()
+        assert deaths["total"] <= everyone
 
     def test_invalid_filter_value_is_rejected(self, mock_srag_df) -> None:
-        assert client.get("/analytics/clinical_flow", params={"base": "x"}).status_code == 422
+        assert client.get("/analytics/severity_cascade", params={"base": "x"}).status_code == 422
 
 
-class TestOddsRatioEndpoint:
-    def test_returns_one_row_per_risk_factor(self, mock_srag_df) -> None:
-        resp = client.get("/analytics/comorbidities_odds_ratio")
-        assert resp.status_code == 200
-        rows = resp.json()
-        assert len(rows) == 14
-        assert {"name", "value", "deaths", "lethality", "odds_ratio"} <= set(rows[0])
-
-    def test_empty_data(self, empty_srag_df) -> None:
-        resp = client.get("/analytics/comorbidities_odds_ratio")
-        assert resp.status_code == 200
-        assert resp.json() == []
-
-
-class TestSymptomsSignatureEndpoint:
-    def test_default_profile(self, mock_srag_df) -> None:
-        resp = client.get("/analytics/symptoms_signature")
+class TestWarningSignsEndpoint:
+    def test_returns_signs_with_and_without(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/warning_signs")
         assert resp.status_code == 200
         body = resp.json()
-        assert set(body["matrices"]) == {"covid", "gripe", "vsr"}
-        assert body["bands"] == ["Criança", "Adolescente", "Adulto", "Idoso"]
+        assert {sign["key"] for sign in body["signs"]} == {"dispneia", "desc_resp", "saturacao"}
+        assert {"lethality", "lethality_without", "reliable"} <= set(body["signs"][0])
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        resp = client.get("/analytics/warning_signs")
+        assert resp.status_code == 200
+        assert resp.json() == {"baseline": None, "signs": []}
+
+
+class TestRiskFactorLoadEndpoint:
+    def test_returns_four_buckets(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/risk_factor_load")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert [bucket["key"] for bucket in body["buckets"]] == ["0", "1", "2", "3+"]
+        assert body["factors"]
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        resp = client.get("/analytics/risk_factor_load")
+        assert resp.status_code == 200
+        assert resp.json() == {"baseline": None, "factors": [], "buckets": []}
+
+
+class TestSymptomsByAgentEndpoint:
+    def test_default_profile(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/symptoms_by_agent")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert [agent["key"] for agent in body["agents"]] == ["covid", "gripe", "vsr"]
+        assert len(body["symptoms"]) == len(body["agents"][0]["pct"])
 
     def test_profile_param(self, mock_srag_df) -> None:
-        body = client.get("/analytics/symptoms_signature", params={"profile": "idoso"}).json()
-        assert body["bands"] == ["60-69 anos", "70-79 anos", "80+ anos"]
+        resp = client.get("/analytics/symptoms_by_agent", params={"profile": "idoso"})
+        assert resp.status_code == 200
 
     def test_invalid_profile_is_rejected(self, mock_srag_df) -> None:
-        resp = client.get("/analytics/symptoms_signature", params={"profile": "bebe"})
+        resp = client.get("/analytics/symptoms_by_agent", params={"profile": "bebe"})
         assert resp.status_code == 422
 
     def test_empty_data(self, empty_srag_df) -> None:
-        resp = client.get("/analytics/symptoms_signature")
+        resp = client.get("/analytics/symptoms_by_agent")
         assert resp.status_code == 200
-        assert resp.json() == {"labels": [], "bands": [], "matrices": {}}
+        assert resp.json() == {"symptoms": [], "agents": []}
 
 
 class TestIcuAccessEndpoint:
