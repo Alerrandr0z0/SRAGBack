@@ -7,197 +7,19 @@ unit-tested with synthetic data and reused by any router.
 
 from __future__ import annotations
 
-import math
 import statistics
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from srag.data.analytics.filters import age_years, outcome_death_mask
 from srag.data.analytics.surveillance import infer_etiologic_agent
-from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES, VENTILACAO_CODES
 from srag.data.loader import MISSING_BAIRRO_LABEL
-from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES
+from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES, VENTILACAO_CODES
 
 # ---------------------------------------------------------------------------
-# Fluxo da jornada clínica (Sankey)
-# ---------------------------------------------------------------------------
-
-_ORIGEM_LABELS = {1: "Infecção Hospitalar", 2: "Comunitária"}
-_UTI_LABELS = {1: "Internado em UTI", 2: "Internado em Enfermaria"}
-_VENT_LABELS = {1: "Vent. Invasiva", 2: "Vent. Não Inv.", 3: "Sem Suporte"}
-_FIM_LABELS = {1: "Cura", 2: "Óbito"}
-
-
-def _label_column(
-    df: pd.DataFrame, column: str, mapping: dict[int, str], fallback: str
-) -> pd.Series:
-    """Map a coded SIVEP column to labels; missing column/values use ``fallback``."""
-    if column not in df.columns:
-        return pd.Series(fallback, index=df.index, dtype="object")
-    codes = pd.to_numeric(df[column], errors="coerce")
-    return codes.map(mapping).fillna(fallback)
-
-
-def _flow_links(stages: pd.DataFrame, source: str, target: str) -> list[dict[str, Any]]:
-    counts = stages.groupby([source, target]).size().reset_index(name="value")
-    source_totals = counts.groupby(source)["value"].transform("sum")
-    counts["pct"] = (counts["value"] / source_totals * 100).round(1)
-    return [
-        {
-            "source": row[source],
-            "target": row[target],
-            "value": int(row["value"]),
-            "pct": float(row["pct"]),
-        }
-        for _, row in counts.iterrows()
-    ]
-
-
-def compute_clinical_flow(df: pd.DataFrame) -> dict[str, list[dict[str, Any]]]:
-    """Patient journey for the Sankey: origem → UTI/enfermaria → suporte → desfecho."""
-    if df.empty:
-        return {"nodes": [], "links": []}
-
-    stages = pd.DataFrame(
-        {
-            "origem": _label_column(df, "NOSOCOMIAL", _ORIGEM_LABELS, "Origem (Ignorado)"),
-            "uti": _label_column(df, "UTI", _UTI_LABELS, "Internação (Ignorado)"),
-            "vent": _label_column(df, "SUPORT_VEN", _VENT_LABELS, "Suporte (Ignorado)"),
-            "fim": _label_column(df, "EVOLUCAO", _FIM_LABELS, "Em Aberto"),
-        },
-        index=df.index,
-    )
-
-    links = (
-        _flow_links(stages, "origem", "uti")
-        + _flow_links(stages, "uti", "vent")
-        + _flow_links(stages, "vent", "fim")
-    )
-    names = sorted({link["source"] for link in links} | {link["target"] for link in links})
-    return {"nodes": [{"name": name} for name in names], "links": links}
-
-
-# ---------------------------------------------------------------------------
-# Associação de comorbidades com o óbito (Odds Ratio)
-# ---------------------------------------------------------------------------
-
-_RISK_FIELDS = [
-    ("PUERPERA", "Puérpera"),
-    ("CARDIOPATI", "Cardiopatia"),
-    ("HEMATOLOGI", "Doença hematológica"),
-    ("SIND_DOWN", "Síndrome de Down"),
-    ("HEPATICA", "Doença hepática"),
-    ("ASMA", "Asma"),
-    ("DIABETES", "Diabetes"),
-    ("NEUROLOGIC", "Doença neurológica"),
-    ("PNEUMOPATI", "Pneumopatia"),
-    ("IMUNODEPRE", "Imunodepressão"),
-    ("RENAL", "Doença renal"),
-    ("OBESIDADE", "Obesidade"),
-    ("TABAG", "Tabagismo"),
-    ("OUT_MORBI", "Outros fatores"),
-]
-
-
-def _odds_ratio_with_ci(a: int, b: int, c: int, d: int) -> tuple[float, float, float]:
-    """Odds Ratio with Woolf 95% CI from a 2x2 table.
-
-    Cells: a=exposed+dead, b=exposed+alive, c=unexposed+dead, d=unexposed+alive.
-    Applies the Haldane correction (+0.5) when any cell is zero.
-    Returns (OR, ci_lower, ci_upper).
-    """
-    aa, bb, cc, dd = float(a), float(b), float(c), float(d)
-    if 0 in (a, b, c, d):
-        aa, bb, cc, dd = aa + 0.5, bb + 0.5, cc + 0.5, dd + 0.5
-    if cc * bb == 0:
-        return (0.0, 0.0, 0.0)
-
-    odds = (aa * dd) / (bb * cc)
-    se = math.sqrt(1 / aa + 1 / bb + 1 / cc + 1 / dd)
-    ln_or = math.log(odds)
-    return (
-        round(odds, 3),
-        round(math.exp(ln_or - 1.96 * se), 3),
-        round(math.exp(ln_or + 1.96 * se), 3),
-    )
-
-
-def compute_comorbidities_odds_ratio(df: pd.DataFrame) -> list[dict[str, Any]]:
-    """Each risk factor with frequency, lethality, Odds Ratio and 95% CI.
-
-    The 2x2 table only uses clinically resolved cases (EVOLUCAO in VALID_OUTCOMES);
-    death is EVOLUCAO == 2. Result is sorted by Odds Ratio, descending.
-    """
-    if df.empty:
-        return []
-
-    if "EVOLUCAO" in df.columns:
-        evolucao = pd.to_numeric(df["EVOLUCAO"], errors="coerce")
-        resolved_mask = evolucao.isin(VALID_OUTCOMES)
-        death_mask = outcome_death_mask(df["EVOLUCAO"])
-    else:
-        resolved_mask = pd.Series(False, index=df.index)
-        death_mask = pd.Series(False, index=df.index)
-
-    total_resolved = int(resolved_mask.sum())
-    total_deaths = int(death_mask.sum())
-
-    rows: list[dict[str, Any]] = []
-    for column, label in _RISK_FIELDS:
-        if column not in df.columns:
-            rows.append(_empty_risk_row(label))
-            continue
-
-        factor_mask = pd.to_numeric(df[column], errors="coerce") == 1
-        count = int(factor_mask.sum())
-        resolved_with = int((factor_mask & resolved_mask).sum())
-        deaths_with = int((factor_mask & death_mask).sum())
-
-        unexposed_deaths = total_deaths - deaths_with
-        unexposed_resolved = total_resolved - resolved_with
-        unexposed_alive = unexposed_resolved - unexposed_deaths
-        # OR is undefined without resolved cases on both sides of the comparison
-        # (the Haldane correction would otherwise invent a meaningless value).
-        if resolved_with == 0 or unexposed_resolved == 0:
-            odds_ratio, ci_lower, ci_upper = 0.0, 0.0, 0.0
-        else:
-            odds_ratio, ci_lower, ci_upper = _odds_ratio_with_ci(
-                deaths_with, resolved_with - deaths_with, unexposed_deaths, unexposed_alive
-            )
-
-        rows.append(
-            {
-                "name": label,
-                "value": count,
-                "deaths": deaths_with,
-                "lethality": round(deaths_with / resolved_with * 100, 2) if resolved_with else 0.0,
-                "prevalence": round(count / len(df) * 100, 2),
-                "odds_ratio": odds_ratio,
-                "ci_lower": ci_lower,
-                "ci_upper": ci_upper,
-            }
-        )
-
-    rows.sort(key=lambda row: row["odds_ratio"], reverse=True)
-    return rows
-
-
-def _empty_risk_row(label: str) -> dict[str, Any]:
-    return {
-        "name": label,
-        "value": 0,
-        "deaths": 0,
-        "lethality": 0.0,
-        "prevalence": 0.0,
-        "odds_ratio": 0.0,
-        "ci_lower": 0.0,
-        "ci_upper": 0.0,
-    }
-
-
-# ---------------------------------------------------------------------------
-# Assinatura clínica de sintomas (COVID-19, Influenza e VSR)
+# Sintomas que diferenciam COVID-19, Influenza e VSR
 # ---------------------------------------------------------------------------
 
 SIGNATURE_PROFILES = ("all", "crianca", "adolescente", "adulto", "idoso")
@@ -254,68 +76,79 @@ def _has_symptom(df: pd.DataFrame, column: str) -> pd.Series:
     return pd.to_numeric(df[column], errors="coerce") == 1
 
 
-def _prevalence_row(
-    has_symptom: pd.Series, agent_mask: pd.Series, band_masks: list[pd.Series]
-) -> list[list[float | int]]:
-    """[prevalence %, case count] of one symptom, for each age band."""
-    row: list[list[float | int]] = []
-    for band_mask in band_masks:
-        subset = agent_mask & band_mask
-        total = int(subset.sum())
-        hits = int((has_symptom & subset).sum()) if total else 0
-        row.append([round(hits / total * 100, 1) if total else 0.0, hits])
-    return row
+_DISTINCTIVE_MIN_POINTS = 10.0
 
 
-def _agent_matrix(
-    df: pd.DataFrame, agent_mask: pd.Series, band_masks: list[pd.Series]
-) -> list[list[list[float | int]]]:
-    return [
-        _prevalence_row(_has_symptom(df, column), agent_mask, band_masks)
-        for column in SYMPTOM_FIELDS.values()
+def _in_profile(df: pd.DataFrame, profile: str) -> pd.Series:
+    """Cases whose age falls in any band of the profile (all known ages for "all")."""
+    age = pd.Series(age_years(df), index=df.index, dtype="float64")
+    inside = np.zeros(len(df), dtype=bool)
+    for _, mask in _age_bands(age, profile):
+        inside |= mask.to_numpy(dtype=bool, na_value=False)
+    return pd.Series(inside, index=df.index)
+
+
+def _distinctive_symptom(
+    agents: list[dict[str, Any]], index: int, labels: list[str]
+) -> dict[str, Any] | None:
+    """Symptom where agent ``index`` stands furthest above every other agent."""
+    mine = agents[index]
+    others = [
+        agent for position, agent in enumerate(agents) if position != index and agent["cases"]
     ]
+    if not mine["cases"] or not others:
+        return None
+    best: dict[str, Any] | None = None
+    for position, label in enumerate(labels):
+        gap = mine["pct"][position] - max(agent["pct"][position] for agent in others)
+        if gap >= _DISTINCTIVE_MIN_POINTS and (best is None or gap > best["gap"]):
+            best = {"symptom": label, "pct": mine["pct"][position], "gap": round(gap, 1)}
+    return best
 
 
-def _order_by_total_prevalence(
-    matrices: dict[str, list[list[list[float | int]]]],
-) -> list[int]:
-    """Row indexes sorted by the symptom's summed prevalence, most frequent first."""
-    count = len(SYMPTOM_FIELDS)
-    totals = [
-        sum(cell[0] for matrix in matrices.values() for cell in matrix[index])
-        for index in range(count)
-    ]
-    return sorted(range(count), key=lambda index: totals[index], reverse=True)
+def compute_symptoms_by_agent(df: pd.DataFrame, profile: str = "all") -> dict[str, Any]:
+    """% of cases with each symptom for COVID-19, Influenza and VSR, plus what sets each apart.
 
-
-def compute_symptoms_signature(df: pd.DataFrame, profile: str = "all") -> dict[str, Any]:
-    """Symptom prevalence (%) per age band for COVID-19, Influenza and VSR.
-
-    Each case belongs to exactly one agent group (the same ``infer_etiologic_agent``
-    used by the agent filter, so VSR positives are not double counted as COVID/Flu).
-    Each cell is ``[prevalence_pct, case_count]``; symptoms are ordered by their
-    summed prevalence, most frequent first.
+    Each case belongs to exactly one agent (the same ``infer_etiologic_agent`` used by the
+    agent filter). Symptoms come ordered by their highest prevalence across agents. Per agent,
+    ``distinctive`` is the symptom that most exceeds every other agent (by at least 10 points).
     """
     if df.empty:
-        return {"labels": [], "bands": [], "matrices": {}}
+        return {"symptoms": [], "agents": []}
 
     profile = profile if profile in SIGNATURE_PROFILES else "all"
-    work = df.copy()
-    bands = _age_bands(pd.to_numeric(age_years(work), errors="coerce"), profile)
-    band_masks = [mask.fillna(False).astype(bool) for _, mask in bands]
-    agents = infer_etiologic_agent(work)
+    inside = _in_profile(df, profile)
+    labels_by_agent = infer_etiologic_agent(df)
+    columns = list(SYMPTOM_FIELDS.values())
 
-    matrices = {
-        key: _agent_matrix(work, agents == label, band_masks)
-        for label, key in _SIGNATURE_AGENTS.items()
-    }
-    order = _order_by_total_prevalence(matrices)
-    labels = [_SYMPTOM_LABELS[key] for key in SYMPTOM_FIELDS]
-    return {
-        "labels": [labels[index] for index in order],
-        "bands": [label for label, _ in bands],
-        "matrices": {key: [matrix[i] for i in order] for key, matrix in matrices.items()},
-    }
+    agents: list[dict[str, Any]] = []
+    for agent_label, key in _SIGNATURE_AGENTS.items():
+        subset = (labels_by_agent == agent_label) & inside
+        cases = int(subset.sum())
+        counts = [int((_has_symptom(df, column) & subset).sum()) for column in columns]
+        agents.append(
+            {
+                "key": key,
+                "label": agent_label,
+                "cases": cases,
+                "count": counts,
+                "pct": [_pct(count, cases) for count in counts],
+            }
+        )
+
+    order = sorted(
+        range(len(columns)),
+        key=lambda index: max(agent["pct"][index] for agent in agents),
+        reverse=True,
+    )
+    symptom_labels = [_SYMPTOM_LABELS[key] for key in SYMPTOM_FIELDS]
+    ordered_labels = [symptom_labels[index] for index in order]
+    for agent in agents:
+        agent["count"] = [agent["count"][index] for index in order]
+        agent["pct"] = [agent["pct"][index] for index in order]
+    for index, agent in enumerate(agents):
+        agent["distinctive"] = _distinctive_symptom(agents, index, ordered_labels)
+    return {"symptoms": ordered_labels, "agents": agents}
 
 
 # ---------------------------------------------------------------------------
@@ -975,6 +808,7 @@ def compute_imaging_severity(df: pd.DataFrame) -> dict[str, Any]:
         "ct": _imaging_findings(df, "TOMO_RES", _CT_FINDINGS),
     }
 
+
 # ---------------------------------------------------------------------------
 # Gravidade e letalidade por faixa etária
 # ---------------------------------------------------------------------------
@@ -1006,6 +840,7 @@ _AGE_BANDS = [
 ]
 _AGE_EDGES = [0, 1, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, float("inf")]
 
+
 def _age_band_column(df: pd.DataFrame) -> pd.Series:
     """Age band of each case; missing age stays empty and is left out of the chart."""
     bands = pd.cut(age_years(df), bins=_AGE_EDGES, labels=_AGE_BANDS, right=False)
@@ -1022,7 +857,7 @@ def _severity_frame(df: pd.DataFrame) -> pd.DataFrame:
             "death": outcome_death_mask(evolucao),
             "icu": _numeric_column(df, "UTI") == 1,
             "support": _numeric_column(df, "SUPORT_VEN").isin(VENTILACAO_CODES),
-            "resolved": evolucao.isin({1, 2}), 
+            "resolved": evolucao.isin({1, 2}),
         },
         index=df.index,
     )
@@ -1096,6 +931,7 @@ def compute_lethality_age_agent(df: pd.DataFrame) -> dict[str, Any]:
         "agents": agents,
         "matrix": matrix,
     }
+
 
 # ---------------------------------------------------------------------------
 # Território: atraso de notificação por bairro
