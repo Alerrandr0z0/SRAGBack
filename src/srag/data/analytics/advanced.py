@@ -761,6 +761,61 @@ def compute_antiviral_windows(df: pd.DataFrame) -> dict[str, Any]:
     }
 
 
+_ANTIVIRAL_AGE_BANDS = (
+    ("0-4", "0-4 anos", 0, 5),
+    ("5-19", "5-19 anos", 5, 20),
+    ("20-59", "20-59 anos", 20, 60),
+    ("60-79", "60-79 anos", 60, 80),
+    ("80+", "80+ anos", 80, float("inf")),
+)
+_ANTIVIRAL_TIMELY_DAYS = 2
+_MIN_RELIABLE_TREATED = 10
+
+
+def compute_antiviral_delay_by_age(df: pd.DataFrame) -> dict[str, Any]:
+    """Delay between first symptoms and antiviral start, by age band.
+
+    Considers only treated cases (ANTIVIRAL == 1) with a start date 0 to 14 days after
+    onset. ``timely_pct`` is the share started within 2 days; ``untreated_pct`` is the
+    share of cases with ANTIVIRAL informed (1 or 2) that did not receive it.
+    """
+    empty: dict[str, Any] = {"timely_days": _ANTIVIRAL_TIMELY_DAYS, "overall": None, "bands": []}
+    if df.empty:
+        return empty
+
+    age = pd.Series(age_years(df), index=df.index, dtype="float64")
+    antiviral = _numeric_column(df, "ANTIVIRAL")
+    days = (_date_column(df, "DT_ANTIVIR") - _date_column(df, "DT_SIN_PRI")).dt.days
+    valid = days.where((antiviral == 1) & days.between(0, _MAX_ANTIVIRAL_DAYS))
+
+    def summarize(mask: pd.Series) -> dict[str, Any]:
+        informed = int((mask & antiviral.isin([1, 2])).sum())
+        not_treated = int((mask & (antiviral == 2)).sum())
+        delay = valid[mask].dropna()
+        count = len(delay)
+        median = delay.median() if count else None
+        return {
+            "cases": int(mask.sum()),
+            "treated": count,
+            "median_days": None if median is None or pd.isna(median) else float(median),
+            "timely_pct": (
+                _pct(int((delay <= _ANTIVIRAL_TIMELY_DAYS).sum()), count) if count else None
+            ),
+            "untreated_pct": _pct(not_treated, informed) if informed else None,
+            "reliable": count >= _MIN_RELIABLE_TREATED,
+        }
+
+    bands = [
+        {"key": key, "label": label, **summarize((age >= low) & (age < high))}
+        for key, label, low, high in _ANTIVIRAL_AGE_BANDS
+    ]
+    return {
+        "timely_days": _ANTIVIRAL_TIMELY_DAYS,
+        "overall": {"key": "all", "label": "Todas", **summarize(pd.Series(True, index=df.index))},
+        "bands": bands,
+    }
+
+
 def _imaging_findings(df: pd.DataFrame, column: str, labels: dict[int, str]) -> dict[str, Any]:
     finding = _numeric_column(df, column).map(labels)
     evolucao = _numeric_column(df, "EVOLUCAO")
