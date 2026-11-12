@@ -20,6 +20,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from srag.data.analytics.filters import age_years
 from srag.data.references import DEATH_OUTCOMES, SYMPTOM_FIELDS, VALID_OUTCOMES
 
 # Abaixo disso o percentual de letalidade oscila demais para ser lido como tendência.
@@ -184,4 +185,58 @@ def compute_risk_factor_load(df: pd.DataFrame) -> dict[str, Any]:
         "baseline": _group(pd.Series(True, index=df.index), resolved, death)["lethality"],
         "factors": [label for _, label in RISK_FACTOR_FIELDS],
         "buckets": buckets,
+    }
+
+
+def _unvaccinated_flags(df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
+    """(informed, unvaccinated): sem nenhuma vacina (influenza ou COVID-19) entre os informados."""
+    flu, covid = _numeric(df, "VACINA"), _numeric(df, "VACINA_COV")
+    vaccinated = (flu == 1) | (covid == 1)
+    informed = vaccinated | (flu == 2) | (covid == 2)
+    return informed, informed & ~vaccinated
+
+
+def _outcome_profile(
+    df: pd.DataFrame, mask: pd.Series, age: pd.Series, risk_count: pd.Series
+) -> dict[str, Any]:
+    """Idade mediana, % sem vacina e % com fator de risco de um grupo de desfecho."""
+    informed, unvaccinated = _unvaccinated_flags(df)
+    risk_known = pd.concat(
+        [_numeric(df, column).isin([1, 2]) for column, _ in RISK_FACTOR_FIELDS], axis=1
+    ).any(axis=1)
+    ages = age.where(mask).dropna()
+    vaccine_base = int((mask & informed).sum())
+    risk_base = int((mask & risk_known).sum())
+    count = int(mask.sum())
+    return {
+        "count": count,
+        "median_age": _round(float(ages.median())) if len(ages) else None,
+        "unvaccinated_pct": (
+            _round(int((mask & unvaccinated).sum()) / vaccine_base * 100) if vaccine_base else None
+        ),
+        "unvaccinated_known": vaccine_base,
+        "risk_factor_pct": (
+            _round(int((mask & (risk_count >= 1)).sum()) / risk_base * 100) if risk_base else None
+        ),
+        "risk_factor_known": risk_base,
+        "reliable": count >= MIN_RELIABLE_RESOLVED,
+    }
+
+
+def compute_fatal_profile(df: pd.DataFrame) -> dict[str, Any]:
+    """Quem morre contra quem sobrevive: idade mediana, % sem vacina e % com fator de risco.
+
+    Óbito = EVOLUCAO 2; sobrevivente = EVOLUCAO 1 (cura). Os percentuais usam só os casos
+    em que a informação foi preenchida (vacina: influenza ou COVID-19; risco: qualquer
+    fator da lista), para que "ignorado" não vire "não".
+    """
+    if df.empty:
+        return {"deaths": None, "survivors": None}
+
+    age = pd.Series(age_years(df), index=df.index, dtype="float64")
+    outcome = _numeric(df, "EVOLUCAO")
+    risk_count = _risk_factor_count(df)
+    return {
+        "deaths": _outcome_profile(df, outcome == 2, age, risk_count),
+        "survivors": _outcome_profile(df, outcome == 1, age, risk_count),
     }

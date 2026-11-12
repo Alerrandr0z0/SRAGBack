@@ -3,6 +3,7 @@
 from srag.data.analytics.advanced import (
     ICU_GRANULARITIES,
     SIGNATURE_PROFILES,
+    compute_antiviral_delay_by_age,
     compute_antiviral_windows,
     compute_diagnostic_lethality,
     compute_diagnostic_methods,
@@ -30,6 +31,7 @@ from srag.data.analytics.clinical import (
     compute_risk_factors_full_profile,
 )
 from srag.data.analytics.clinical_profile import (
+    compute_fatal_profile,
     compute_risk_factor_load,
     compute_severity_cascade,
     compute_warning_signs,
@@ -43,6 +45,7 @@ from srag.data.analytics.demographics import (
     compute_race_profile,
     compute_schooling_profile,
 )
+from srag.data.analytics.endemic import compute_endemic_channel
 from srag.data.analytics.filters import (
     age_years,
     apply_global_filters,
@@ -85,6 +88,7 @@ __all__ = [
     "classificar_status_gripe",
     "compute_age_pareto",
     "compute_animal_contact",
+    "compute_antiviral_delay_by_age",
     "compute_antiviral_windows",
     "compute_citizen_pyramid",
     "compute_comorbidities_pareto",
@@ -92,6 +96,8 @@ __all__ = [
     "compute_covid_vaccination_profile",
     "compute_diagnostic_lethality",
     "compute_diagnostic_methods",
+    "compute_endemic_channel",
+    "compute_fatal_profile",
     "compute_flu_vaccination_donut",
     "compute_hospital_stay",
     "compute_icu_access",

@@ -256,3 +256,44 @@ class TestUnitEndpoints:
     def test_filters_are_validated(self, mock_srag_df) -> None:
         for path in ("notifying_units", "unit_notification_delay", "hospital_stay"):
             assert client.get(f"/analytics/{path}", params={"base": "x"}).status_code == 422
+
+
+class TestEndemicChannelEndpoint:
+    def test_without_enough_history(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/endemic_channel")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["enough_history"] is False
+        assert body["min_years"] == 3
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        resp = client.get("/analytics/endemic_channel")
+        assert resp.status_code == 200
+        assert resp.json()["weeks"] == []
+
+
+class TestFatalProfileEndpoint:
+    def test_returns_both_groups(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/fatal_profile")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert {"count", "median_age", "unvaccinated_pct", "risk_factor_pct"} <= set(
+            body["deaths"]
+        )
+        assert body["survivors"] is not None
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        resp = client.get("/analytics/fatal_profile")
+        assert resp.json() == {"deaths": None, "survivors": None}
+
+
+class TestAntiviralDelayByAgeEndpoint:
+    def test_returns_age_bands(self, mock_srag_df) -> None:
+        resp = client.get("/analytics/antiviral_delay_by_age")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert [band["key"] for band in body["bands"]] == ["0-4", "5-19", "20-59", "60-79", "80+"]
+
+    def test_empty_data(self, empty_srag_df) -> None:
+        resp = client.get("/analytics/antiviral_delay_by_age")
+        assert resp.json()["bands"] == []

@@ -17,10 +17,13 @@ from srag.api.core import apply_surveillance_filters, get_df, sanitize_data
 from srag.api.dependencies import CommonFiltersDep
 from srag.api.types import (
     AnimalContactResponse,
+    AntiviralDelayByAgeResponse,
     AntiviralWindowsResponse,
     CovidImmunizationResponse,
     DiagnosticLethalityResponse,
     DiagnosticMethodsResponse,
+    EndemicChannelResponse,
+    FatalProfileResponse,
     HospitalStayResponse,
     IcuAccessResponse,
     ImagingSeverityResponse,
@@ -45,10 +48,13 @@ from srag.data.analytics import (
     SIGNATURE_PROFILES,
     apply_global_filters,
     compute_animal_contact,
+    compute_antiviral_delay_by_age,
     compute_antiviral_windows,
     compute_covid_dose_stage,
     compute_diagnostic_lethality,
     compute_diagnostic_methods,
+    compute_endemic_channel,
+    compute_fatal_profile,
     compute_hospital_stay,
     compute_icu_access,
     compute_imaging_severity,
@@ -89,6 +95,33 @@ def _filtered_df(filters: CommonFiltersDep) -> pd.DataFrame:
         get_df(), filters.bairros, filters.base, filters.gravidade, filters.sintomas
     )
     return apply_surveillance_filters(df, filters.years, filters.agents, filters.classi)
+
+
+@router.get("/endemic_channel")
+def endemic_channel(filters: CommonFiltersDep) -> EndemicChannelResponse:
+    """Casos por semana contra a faixa esperada dos anos anteriores (mín. 3 anos)."""
+    df = apply_global_filters(
+        get_df(), filters.bairros, filters.base, filters.gravidade, filters.sintomas
+    )
+    # O filtro de ano não recorta os dados: os anos anteriores formam a faixa.
+    df = apply_surveillance_filters(df, None, filters.agents, filters.classi)
+    reference_year = max(filters.years) if filters.years else None
+    result = compute_endemic_channel(df, reference_year)
+    return cast("EndemicChannelResponse", sanitize_data(result))
+
+
+@router.get("/fatal_profile")
+def fatal_profile(filters: CommonFiltersDep) -> FatalProfileResponse:
+    """Idade mediana, % sem vacina e % com fator de risco de quem morre e de quem sobrevive."""
+    result = compute_fatal_profile(_filtered_df(filters))
+    return cast("FatalProfileResponse", sanitize_data(result))
+
+
+@router.get("/antiviral_delay_by_age")
+def antiviral_delay_by_age(filters: CommonFiltersDep) -> AntiviralDelayByAgeResponse:
+    """Atraso entre os primeiros sintomas e o antiviral, por faixa etária."""
+    result = compute_antiviral_delay_by_age(_filtered_df(filters))
+    return cast("AntiviralDelayByAgeResponse", sanitize_data(result))
 
 
 @router.get("/severity_cascade")
