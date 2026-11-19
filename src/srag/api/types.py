@@ -76,6 +76,19 @@ class SeverityStep(TypedDict):
     label: str
     pct: float
 
+class ClinicalFlowNode(TypedDict):
+    """Sankey node."""
+
+    name: str
+
+
+class ClinicalFlowLink(TypedDict):
+    """Sankey link between two stages of the patient journey."""
+
+    source: str
+    target: str
+    value: int
+    pct: float
 
 class ClinicalFlowResponse(TypedDict):
     """Patient journey: origin -> ICU/ward -> ventilatory support -> outcome."""
