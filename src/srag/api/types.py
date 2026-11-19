@@ -69,18 +69,11 @@ class ComorbiditiesParetoItem(TypedDict):
 ComorbiditiesParetoResponse = list[ComorbiditiesParetoItem]
 
 
-class ClinicalFlowNode(TypedDict):
-    """Sankey node."""
+class SeverityStep(TypedDict):
+    """One step of the severity cascade: how many cases reach it and how lethal it is."""
 
-    name: str
-
-
-class ClinicalFlowLink(TypedDict):
-    """Sankey link between two stages of the patient journey."""
-
-    source: str
-    target: str
-    value: int
+    key: str
+    label: str
     pct: float
 
 
@@ -394,6 +387,8 @@ class LethalityAgeAgentResponse(TypedDict):
     age_bands: list[str]
     agents: list[str]
     matrix: list[list[float | None]]
+
+
 class NotificationDelayOverall(TypedDict):
     """Delay between first symptoms and notification over every valid case."""
 
@@ -557,3 +552,69 @@ class VaccineJourneyResponse(TypedDict):
 
     min_cases: int
     stages: list[VaccineJourneyStage]
+
+
+class EndemicWeek(TypedDict):
+    """One epidemiological week against the expected band."""
+
+    week: int
+    cases: int | None
+    p25: float
+    median: float
+    p75: float
+    alert: float
+    status: str | None
+
+
+class EndemicChannelResponse(TypedDict):
+    """Weekly cases of the reference year against the band of previous years."""
+
+    enough_history: bool
+    min_years: int
+    reference_year: int | None
+    history_years: list[int]
+    current_week: int | None
+    current_cases: int | None
+    current_status: str | None
+    weeks_above: int
+    weeks: list[EndemicWeek]
+
+
+class OutcomeProfile(TypedDict):
+    """Age, vaccination and risk-factor profile of one outcome group."""
+
+    count: int
+    median_age: float | None
+    unvaccinated_pct: float | None
+    unvaccinated_known: int
+    risk_factor_pct: float | None
+    risk_factor_known: int
+    reliable: bool
+
+
+class FatalProfileResponse(TypedDict):
+    """Who dies compared with who survives."""
+
+    deaths: OutcomeProfile | None
+    survivors: OutcomeProfile | None
+
+
+class AntiviralAgeBand(TypedDict):
+    """Antiviral start delay of one age band."""
+
+    key: str
+    label: str
+    cases: int
+    treated: int
+    median_days: float | None
+    timely_pct: float | None
+    untreated_pct: float | None
+    reliable: bool
+
+
+class AntiviralDelayByAgeResponse(TypedDict):
+    """Delay to antiviral by age band."""
+
+    timely_days: int
+    overall: AntiviralAgeBand | None
+    bands: list[AntiviralAgeBand]
