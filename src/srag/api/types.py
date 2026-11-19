@@ -97,6 +97,7 @@ class OddsRatioRow(TypedDict):
     name: str
     value: int
     deaths: int
+    resolved: int
     lethality: float
     prevalence: float
     odds_ratio: float

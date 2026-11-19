@@ -131,10 +131,10 @@ hooks:
 
 # --- Testing ---
 test:
-	$(DOCKER_RUN_BACK) env UV_CACHE_DIR=/tmp/.uv-cache COVERAGE_FILE=/tmp/.coverage HOME=/home/appuser uv run pytest tests/ -m "not slow" --basetemp=/tmp/pytest -p no:cacheprovider --cov=src/srag --cov-report=term --cov-fail-under=80
+	$(DOCKER_RUN_BACK) env HOME=/tmp UV_CACHE_DIR=/tmp/.uv-cache UV_NO_CACHE=1 pytest tests/ -m "not slow" --basetemp=/tmp/pytest -p no:cacheprovider --cov=src/srag --cov-config=/dev/null --cov-report=term --cov-fail-under=80
 
 property-test:
-	$(DOCKER_RUN_BACK) env UV_CACHE_DIR=/tmp/.uv-cache uv run pytest -m "not slow" tests/unit/test_hypothesis_sivep.py
+	$(DOCKER_RUN_BACK) env UV_NO_CACHE=1 uv run pytest -m "not slow" tests/unit/test_hypothesis_sivep.py
 
 mutation: mutation-back
 mutation-back:
@@ -149,7 +149,7 @@ mutation-score:
 	$(DOCKER_RUN_BACK) env UV_CACHE_DIR=/tmp/.uv-cache uv run mutmut results --no-pager 2>/dev/null | tail -10
 
 bench:
-	$(DOCKER_RUN_BACK) env UV_CACHE_DIR=/tmp/.uv-cache uv run pytest tests/performance/ --benchmark-only --benchmark-sort=mean --benchmark-warmup=on --benchmark-min-rounds=10
+	$(DOCKER_RUN_BACK) env UV_NO_CACHE=1 uv run pytest tests/performance/ --benchmark-only --benchmark-sort=mean --benchmark-warmup=on --benchmark-min-rounds=10
 
 # --- Observability ---
 observability:
