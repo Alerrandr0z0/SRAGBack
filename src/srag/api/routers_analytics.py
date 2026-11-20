@@ -34,6 +34,7 @@ from srag.api.types import (
     NotificationDelayResponse,
     NotifyingUnitsResponse,
     OccupationProfileResponse,
+    OddsRatioRow,
     RiskFactorLoadResponse,
     SamplePositivityResponse,
     SeverityByAgePoint,
@@ -65,6 +66,7 @@ from srag.data.analytics import (
     compute_notification_delay,
     compute_notifying_units,
     compute_occupation_profile,
+    compute_comorbidities_odds_ratio,
     compute_risk_factor_load,
     compute_sample_positivity,
     compute_severity_by_age,
@@ -307,3 +309,9 @@ def vaccine_journey(filters: CommonFiltersDep) -> VaccineJourneyResponse:
     """Jornada hospitalar por etapa da vacinação contra COVID-19."""
     result = compute_vaccine_journey(_filtered_df(filters))
     return cast("VaccineJourneyResponse", sanitize_data(result))
+
+@router.get("/comorbidity-lethality")
+def comorbidity_lethality(filters: CommonFiltersDep) -> list[OddsRatioRow]:
+    """Letalidade, Odds Ratio e IC 95% de cada comorbidade entre os casos com desfecho."""
+    result = compute_comorbidities_odds_ratio(_filtered_df(filters))
+    return cast("list[OddsRatioRow]", sanitize_data(result))

@@ -10,6 +10,7 @@ from __future__ import annotations
 import statistics
 from typing import Any
 
+import math
 import numpy as np
 import pandas as pd
 
@@ -19,8 +20,125 @@ from srag.data.loader import MISSING_BAIRRO_LABEL
 from srag.data.references import SYMPTOM_FIELDS, VALID_OUTCOMES, VENTILACAO_CODES
 
 # ---------------------------------------------------------------------------
-# Sintomas que diferenciam COVID-19, Influenza e VSR
 # ---------------------------------------------------------------------------
+# Associação de comorbidades com o óbito (Odds Ratio)
+# ---------------------------------------------------------------------------
+
+_RISK_FIELDS = [
+    ("PUERPERA", "Puérpera"),
+    ("CARDIOPATI", "Cardiopatia"),
+    ("HEMATOLOGI", "Doença hematológica"),
+    ("SIND_DOWN", "Síndrome de Down"),
+    ("HEPATICA", "Doença hepática"),
+    ("ASMA", "Asma"),
+    ("DIABETES", "Diabetes"),
+    ("NEUROLOGIC", "Doença neurológica"),
+    ("PNEUMOPATI", "Pneumopatia"),
+    ("IMUNODEPRE", "Imunodepressão"),
+    ("RENAL", "Doença renal"),
+    ("OBESIDADE", "Obesidade"),
+    ("TABAG", "Tabagismo"),
+    ("OUT_MORBI", "Outros fatores"),
+]
+
+
+def _odds_ratio_with_ci(a: int, b: int, c: int, d: int) -> tuple[float, float, float]:
+    """Odds Ratio with Woolf 95% CI from a 2x2 table.
+
+    Cells: a=exposed+dead, b=exposed+alive, c=unexposed+dead, d=unexposed+alive.
+    Applies the Haldane correction (+0.5) when any cell is zero.
+    Returns (OR, ci_lower, ci_upper).
+    """
+    aa, bb, cc, dd = float(a), float(b), float(c), float(d)
+    if 0 in (a, b, c, d):
+        aa, bb, cc, dd = aa + 0.5, bb + 0.5, cc + 0.5, dd + 0.5
+    if cc * bb == 0:
+        return (0.0, 0.0, 0.0)
+
+    odds = (aa * dd) / (bb * cc)
+    se = math.sqrt(1 / aa + 1 / bb + 1 / cc + 1 / dd)
+    ln_or = math.log(odds)
+    return (
+        round(odds, 3),
+        round(math.exp(ln_or - 1.96 * se), 3),
+        round(math.exp(ln_or + 1.96 * se), 3),
+    )
+
+
+def compute_comorbidities_odds_ratio(df: pd.DataFrame) -> list[dict[str, Any]]:
+    """Each risk factor with frequency, lethality, Odds Ratio and 95% CI.
+
+    The 2x2 table only uses clinically resolved cases (EVOLUCAO in VALID_OUTCOMES);
+    death is EVOLUCAO == 2. Result is sorted by Odds Ratio, descending.
+    """
+    if df.empty:
+        return []
+
+    if "EVOLUCAO" in df.columns:
+        evolucao = pd.to_numeric(df["EVOLUCAO"], errors="coerce")
+        resolved_mask = evolucao.isin(VALID_OUTCOMES)
+        death_mask = outcome_death_mask(df["EVOLUCAO"])
+    else:
+        resolved_mask = pd.Series(False, index=df.index)
+        death_mask = pd.Series(False, index=df.index)
+
+    total_resolved = int(resolved_mask.sum())
+    total_deaths = int(death_mask.sum())
+
+    rows: list[dict[str, Any]] = []
+    for column, label in _RISK_FIELDS:
+        if column not in df.columns:
+            rows.append(_empty_risk_row(label))
+            continue
+
+        factor_mask = pd.to_numeric(df[column], errors="coerce") == 1
+        count = int(factor_mask.sum())
+        resolved_with = int((factor_mask & resolved_mask).sum())
+        deaths_with = int((factor_mask & death_mask).sum())
+
+        unexposed_deaths = total_deaths - deaths_with
+        unexposed_resolved = total_resolved - resolved_with
+        unexposed_alive = unexposed_resolved - unexposed_deaths
+        # OR is undefined without resolved cases on both sides of the comparison
+        # (the Haldane correction would otherwise invent a meaningless value).
+        if resolved_with == 0 or unexposed_resolved == 0:
+            odds_ratio, ci_lower, ci_upper = 0.0, 0.0, 0.0
+        else:
+            odds_ratio, ci_lower, ci_upper = _odds_ratio_with_ci(
+                deaths_with, resolved_with - deaths_with, unexposed_deaths, unexposed_alive
+            )
+
+        rows.append(
+            {
+                "name": label,
+                "value": count,
+                "deaths": deaths_with,
+                "resolved": resolved_with,
+                "lethality": round(deaths_with / resolved_with * 100, 2) if resolved_with else 0.0,
+                "prevalence": round(count / len(df) * 100, 2),
+                "odds_ratio": odds_ratio,
+                "ci_lower": ci_lower,
+                "ci_upper": ci_upper,
+            }
+        )
+
+    rows.sort(key=lambda row: row["odds_ratio"], reverse=True)
+    return rows
+
+
+def _empty_risk_row(label: str) -> dict[str, Any]:
+    return {
+        "name": label,
+        "value": 0,
+        "deaths": 0,
+        "resolved": 0,
+        "lethality": 0.0,
+        "prevalence": 0.0,
+        "odds_ratio": 0.0,
+        "ci_lower": 0.0,
+        "ci_upper": 0.0,
+    }
+
 
 SIGNATURE_PROFILES = ("all", "crianca", "adolescente", "adulto", "idoso")
 
